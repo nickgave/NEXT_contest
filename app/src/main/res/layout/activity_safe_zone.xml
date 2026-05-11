@@ -3,131 +3,160 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@drawable/bg_screen">
 
-    <!-- Top Navigation Bar -->
     <Button
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="42dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="18dp"
+        android:backgroundTint="@color/surface_muted"
+        android:minWidth="0dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
         android:text="뒤로"
-        android:layout_margin="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvSafeZoneTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="안전구역 설정"
-        android:textSize="20sp"
+        android:textColor="@color/text_primary"
+        android:textSize="22sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/btnBack" />
 
     <Button
         android:id="@+id/btnRadiusToggle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="42dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="20dp"
+        android:backgroundTint="@color/primary"
+        android:minWidth="0dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
         android:text="반경"
-        android:layout_margin="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Map Area (Fills space below buttons) -->
     <FrameLayout
         android:id="@+id/mapPlaceholder"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#EEEEEE"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_marginTop="18dp"
+        android:background="@color/surface_muted"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnBack">
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="666dp"
-            android:alpha="0.5"
+            android:layout_height="match_parent"
+            android:alpha="0.35"
+            android:contentDescription="지도"
             android:scaleType="centerCrop"
-            android:src="@android:drawable/ic_dialog_map" />
+            android:src="@android:drawable/ic_dialog_map"
+            app:tint="@color/text_secondary" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="지도 영역 (GPS/Map API 연동 예정)"
-            android:textColor="#9E9E9E" />
+            android:background="@drawable/bg_status"
+            android:paddingStart="18dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="12dp"
+            android:text="지도 연동 예정"
+            android:textColor="@color/text_secondary"
+            android:textSize="16sp" />
 
-        <!-- Radius Circle (Now using oval shape) -->
         <View
             android:id="@+id/radiusCircle"
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_gravity="center"
+            android:alpha="0.28"
             android:background="@drawable/circle_bg"
-            android:alpha="0.3"
             android:visibility="visible" />
 
-        <!-- Home Pin -->
         <ImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center"
+            android:contentDescription="기준 위치"
             android:src="@android:drawable/ic_menu_myplaces"
-            app:tint="#D32F2F" />
+            app:tint="@color/danger" />
 
-        <!-- Floating Search Bar (Now inside the map area) -->
         <androidx.cardview.widget.CardView
             android:id="@+id/searchCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
             android:layout_gravity="top"
+            android:layout_margin="16dp"
             app:cardCornerRadius="8dp"
-            app:cardElevation="6dp">
+            app:cardElevation="2dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_panel"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="8dp"
-                android:gravity="center_vertical">
+                android:padding="12dp">
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="검색"
                     android:src="@android:drawable/ic_menu_search"
-                    android:layout_marginEnd="8dp" />
+                    app:tint="@color/text_secondary" />
 
                 <EditText
                     android:id="@+id/etSearchLocation"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="집 주소 또는 장소 검색"
+                    android:layout_weight="1"
                     android:background="@null"
+                    android:hint="집 주소 또는 장소 검색"
+                    android:singleLine="true"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
                     android:textSize="16sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </FrameLayout>
 
-    <!-- Radius Control Panel -->
     <androidx.cardview.widget.CardView
         android:id="@+id/layoutRadiusControl"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
         android:visibility="gone"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="8dp"
-        app:layout_constraintTop_toBottomOf="@id/btnRadiusToggle"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="3dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent="0.6">
+        app:layout_constraintTop_toBottomOf="@id/btnRadiusToggle"
+        app:layout_constraintWidth_percent="0.62">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_panel"
             android:orientation="vertical"
             android:padding="16dp">
 
@@ -136,6 +165,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="설정 반경: 500m"
+                android:textColor="@color/text_primary"
                 android:textStyle="bold" />
 
             <SeekBar

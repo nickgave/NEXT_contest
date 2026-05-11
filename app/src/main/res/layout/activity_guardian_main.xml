@@ -4,185 +4,187 @@
     android:id="@+id/main_guardian"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@drawable/bg_screen"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp">
 
-    <!-- Guidelines -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideLeft"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideRight"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <!-- Title text -->
-    <TextView
-        android:id="@+id/titleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="길라잡이"
-        android:textColor="#000000"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="40dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btnLocationMap"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-    <!-- 로그아웃 및 설정 버튼 -->
     <LinearLayout
+        android:id="@+id/topActions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:gravity="end"
         android:orientation="horizontal"
-        android:layout_margin="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <Button
             android:id="@+id/btnSettings"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="설정"
-            android:textSize="12sp"
+            android:layout_height="42dp"
             android:layout_marginEnd="8dp"
-            android:backgroundTint="#757575" />
+            android:backgroundTint="@color/surface_muted"
+            android:minWidth="0dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="설정"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
 
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="42dp"
+            android:backgroundTint="@color/surface_muted"
+            android:minWidth="0dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
             android:text="로그아웃"
-            android:textSize="12sp"
-            android:backgroundTint="#757575" />
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
     </LinearLayout>
 
-    <!-- 위치 확인 카드 -->
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="보호자 홈"
+        android:textColor="@color/text_primary"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/btnLocationMap"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topActions"
+        app:layout_constraintVertical_chainStyle="packed" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/btnLocationMap"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="14dp"
         android:clickable="true"
         android:focusable="true"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="6dp"
-        app:layout_constraintTop_toBottomOf="@id/titleText"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
         app:layout_constraintBottom_toTopOf="@id/btnSafeZone"
-        app:layout_constraintStart_toStartOf="@id/guideLeft"
-        app:layout_constraintEnd_toEndOf="@id/guideRight">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleText">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="104dp"
+            android:background="@drawable/bg_panel"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="25dp"
-            android:gravity="center"
-            android:background="#FFF3E0">
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp">
 
             <ImageView
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:contentDescription="실시간 위치 추적"
                 android:src="@android:drawable/ic_dialog_map"
-                app:tint="#F57C00"
-                android:contentDescription="위치 확인 아이콘" />
+                app:tint="@color/primary" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="위치 확인"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:textColor="#F57C00"
-                android:layout_marginStart="20dp" />
+                android:layout_marginStart="18dp"
+                android:layout_weight="1"
+                android:text="실시간 위치 추적"
+                android:textColor="@color/text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- 안전구역 설정 카드 -->
     <androidx.cardview.widget.CardView
         android:id="@+id/btnSafeZone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="14dp"
         android:clickable="true"
         android:focusable="true"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="6dp"
-        app:layout_constraintTop_toBottomOf="@id/btnLocationMap"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
         app:layout_constraintBottom_toTopOf="@id/btnReportMissing"
-        app:layout_constraintStart_toStartOf="@id/guideLeft"
-        app:layout_constraintEnd_toEndOf="@id/guideRight">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnLocationMap">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="104dp"
+            android:background="@drawable/bg_panel"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="25dp"
-            android:gravity="center"
-            android:background="#E0F2F1">
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp">
 
             <ImageView
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:contentDescription="안전구역 설정"
                 android:src="@android:drawable/ic_lock_idle_lock"
-                app:tint="#00796B"
-                android:contentDescription="안전구역 아이콘" />
+                app:tint="@color/success" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:layout_weight="1"
                 android:text="안전구역 설정"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:textColor="#00796B"
-                android:layout_marginStart="20dp" />
+                android:textColor="@color/text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- 실종 신고 카드 -->
     <androidx.cardview.widget.CardView
         android:id="@+id/btnReportMissing"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="28dp"
         android:clickable="true"
         android:focusable="true"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="6dp"
-        app:layout_constraintTop_toBottomOf="@id/btnSafeZone"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@id/guideLeft"
-        app:layout_constraintEnd_toEndOf="@id/guideRight">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnSafeZone">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="104dp"
+            android:background="@drawable/bg_panel"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="25dp"
-            android:gravity="center"
-            android:background="#FFEBEE">
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp">
 
             <ImageView
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:contentDescription="실종 신고"
                 android:src="@android:drawable/ic_menu_help"
-                app:tint="#D32F2F"
-                android:contentDescription="실종 신고 아이콘" />
+                app:tint="@color/danger" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:layout_weight="1"
                 android:text="실종 신고"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:textColor="#D32F2F"
-                android:layout_marginStart="20dp" />
+                android:textColor="@color/text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

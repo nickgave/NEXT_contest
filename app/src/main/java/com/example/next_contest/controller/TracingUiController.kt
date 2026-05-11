@@ -9,6 +9,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import com.example.next_contest.R
 import com.example.next_contest.model.PatientLocation
+import com.kakao.vectormap.MapView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -27,6 +28,7 @@ class TracingUiController(
     private lateinit var btnDismissSos: Button
     private lateinit var tvNoPatient: TextView
     private lateinit var layoutTrackingInfo: View
+    private lateinit var mapController: KakaoLocationMapController
 
     fun bindViews() {
         tvOnlineStatus = activity.findViewById(R.id.tvOnlineStatus)
@@ -40,6 +42,10 @@ class TracingUiController(
         btnDismissSos = activity.findViewById(R.id.btnDismissSos)
         tvNoPatient = activity.findViewById(R.id.tvNoPatient)
         layoutTrackingInfo = activity.findViewById(R.id.layoutTrackingInfo)
+        mapController = KakaoLocationMapController(
+            activity.findViewById<MapView>(R.id.liveMapView)
+        )
+        mapController.start()
 
         layoutTrackingInfo.visibility = View.GONE
         layoutSosBanner.visibility = View.GONE
@@ -76,9 +82,9 @@ class TracingUiController(
 
         tvOnlineStatus.text =
             if (location.isOnline) {
-                "🟢 온라인 - 위치 공유 중"
+                "온라인 - 위치 공유 중"
             } else {
-                "🔴 오프라인 - 마지막 위치"
+                "오프라인 - 마지막 위치"
             }
 
         tvOnlineStatus.setTextColor(
@@ -102,7 +108,7 @@ class TracingUiController(
 
         if (location.sos) {
             layoutSosBanner.visibility = View.VISIBLE
-            tvSosMessage.text = " SOS 요청이 발생했습니다!\n어르신이 도움을 요청하고 있습니다."
+            tvSosMessage.text = "SOS 요청이 발생했습니다!\n어르신이 도움을 요청하고 있습니다."
         } else {
             layoutSosBanner.visibility = View.GONE
         }
@@ -118,7 +124,35 @@ class TracingUiController(
         ivDirectionArrow.rotation = arrowRotation
     }
 
+    fun showMapLocations(
+        guardianLat: Double?,
+        guardianLng: Double?,
+        patientLat: Double?,
+        patientLng: Double?
+    ) {
+        mapController.showLocations(
+            meLat = guardianLat,
+            meLng = guardianLng,
+            otherLat = patientLat,
+            otherLng = patientLng,
+            meLabel = "나",
+            otherLabel = "어르신"
+        )
+    }
+
     fun hideSosBanner() {
         layoutSosBanner.visibility = View.GONE
+    }
+
+    fun stopMap() {
+        if (::mapController.isInitialized) {
+            mapController.stop()
+        }
+    }
+
+    fun onLowMemory() {
+        if (::mapController.isInitialized) {
+            mapController.onLowMemory()
+        }
     }
 }

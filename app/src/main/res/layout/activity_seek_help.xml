@@ -3,90 +3,98 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF5F5">
+    android:background="@drawable/bg_screen"
+    android:paddingStart="22dp"
+    android:paddingEnd="22dp">
 
-    <!-- 뒤로 가기 버튼 -->
     <Button
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="42dp"
+        android:layout_marginTop="18dp"
+        android:backgroundTint="@color/surface_muted"
+        android:minWidth="0dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
         android:text="뒤로"
-        android:layout_margin="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvHelpTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="도움이 필요하신가요?"
-        android:textSize="32sp"
+        android:textColor="@color/danger"
+        android:textSize="30sp"
         android:textStyle="bold"
-        android:textColor="#D32F2F"
-        android:layout_marginTop="40dp"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:layout_constraintBottom_toTopOf="@id/tvHelpDescription"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/tvHelpDescription"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="아래 버튼 중 하나를 누르면\n바로 도움을 요청할 수 있습니다."
-        android:textSize="20sp"
-        android:textColor="#333333"
+        android:layout_marginTop="14dp"
         android:gravity="center"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/tvHelpTitle"
+        android:text="아래 버튼 중 하나를 누르면 바로 도움을 요청할 수 있습니다."
+        android:textColor="@color/text_secondary"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@id/btnCallCaregiver"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/tvHelpTitle" />
 
-    <!-- 보호자에게 전화하기 -->
     <Button
         android:id="@+id/btnCallCaregiver"
         android:layout_width="0dp"
-        android:layout_height="120dp"
+        android:layout_height="112dp"
+        android:layout_marginTop="34dp"
+        android:backgroundTint="@color/primary"
         android:text="보호자에게\n전화하기"
-        android:textSize="26sp"
+        android:textColor="@color/white"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        app:backgroundTint="#2196F3"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="50dp"
-        app:layout_constraintTop_toBottomOf="@id/tvHelpDescription"
+        app:layout_constraintBottom_toTopOf="@id/btnCallPolice"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/tvHelpDescription" />
 
-    <!-- 경찰서(112) 신고하기 -->
     <Button
         android:id="@+id/btnCallPolice"
         android:layout_width="0dp"
-        android:layout_height="120dp"
+        android:layout_height="112dp"
+        android:layout_marginTop="14dp"
+        android:backgroundTint="@color/danger"
         android:text="경찰(112)에\n도움 요청"
-        android:textSize="26sp"
+        android:textColor="@color/white"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        app:backgroundTint="#F44336"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/btnCallCaregiver"
+        app:layout_constraintBottom_toTopOf="@id/btnSendLocation"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/btnCallCaregiver" />
 
-    <!-- 현재 위치 전송 -->
     <Button
         android:id="@+id/btnSendLocation"
         android:layout_width="0dp"
-        android:layout_height="80dp"
+        android:layout_height="76dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="34dp"
+        android:backgroundTint="@color/success"
         android:text="내 위치 알리기"
-        android:textSize="22sp"
-        android:textColor="#FFFFFF"
-        app:backgroundTint="#4CAF50"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/btnCallPolice"
+        android:textColor="@color/white"
+        android:textSize="21sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/btnCallPolice" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

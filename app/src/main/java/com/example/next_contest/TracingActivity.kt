@@ -42,6 +42,7 @@ class TracingActivity : AppCompatActivity() {
             onLocationChanged = { lat, lng ->
                 guardianLat = lat
                 guardianLng = lng
+                updateMap()
                 updateArrowAndDistance()
             }
         )
@@ -127,6 +128,7 @@ class TracingActivity : AppCompatActivity() {
 
         uiController.showPatientLocation(location)
 
+        updateMap()
         updateArrowAndDistance()
     }
 
@@ -148,6 +150,16 @@ class TracingActivity : AppCompatActivity() {
         super.onDestroy()
         stopWatchingPatientLocation()
         stopGuardianLocationUpdates()
+        if (::uiController.isInitialized) {
+            uiController.stopMap()
+        }
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        if (::uiController.isInitialized) {
+            uiController.onLowMemory()
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -182,6 +194,15 @@ class TracingActivity : AppCompatActivity() {
             distanceMeters = distance,
             directionText = DirectionUtils.getPatientDirectionCaption(correctedBearing),
             arrowRotation = correctedBearing
+        )
+    }
+
+    private fun updateMap() {
+        uiController.showMapLocations(
+            guardianLat = guardianLat,
+            guardianLng = guardianLng,
+            patientLat = patientLat,
+            patientLng = patientLng
         )
     }
 

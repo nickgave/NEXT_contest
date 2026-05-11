@@ -3,124 +3,136 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@drawable/bg_screen"
+    android:paddingStart="22dp"
+    android:paddingEnd="22dp">
 
-    <!-- 뒤로 가기 버튼 -->
     <Button
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="42dp"
+        android:layout_marginTop="18dp"
+        android:backgroundTint="@color/surface_muted"
+        android:minWidth="0dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
         android:text="뒤로"
-        android:layout_margin="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvLoginTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="사용자 선택"
-        android:textSize="32sp"
+        android:layout_marginBottom="28dp"
+        android:gravity="center"
+        android:text="회원가입할 역할 선택"
+        android:textColor="@color/text_primary"
+        android:textSize="30sp"
         android:textStyle="bold"
-        android:textColor="#000000"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
         app:layout_constraintBottom_toTopOf="@id/btnElderly"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnBack"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <!-- 어르신 모드 선택 -->
     <androidx.cardview.widget.CardView
         android:id="@+id/btnElderly"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp"
+        android:layout_marginBottom="14dp"
         android:clickable="true"
         android:focusable="true"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="8dp"
-        app:layout_constraintTop_toBottomOf="@id/tvLoginTitle"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
         app:layout_constraintBottom_toTopOf="@id/btnGuardian"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/tvLoginTitle">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="30dp"
+            android:layout_height="150dp"
+            android:background="@drawable/bg_panel"
             android:gravity="center"
-            android:background="#E3F2FD">
+            android:orientation="vertical"
+            android:padding="24dp">
 
             <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:contentDescription="어르신"
                 android:src="@android:drawable/ic_menu_myplaces"
-                app:tint="#1976D2" />
+                app:tint="@color/primary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:text="어르신"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="#1976D2"
-                android:layout_marginTop="10dp" />
+                android:textColor="@color/text_primary"
+                android:textSize="25sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="길 안내가 필요하신 분"
-                android:textSize="16sp"
-                android:textColor="#666666" />
+                android:layout_marginTop="4dp"
+                android:text="길 안내가 필요한 분"
+                android:textColor="@color/text_secondary"
+                android:textSize="15sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- 보호자 모드 선택 -->
     <androidx.cardview.widget.CardView
         android:id="@+id/btnGuardian"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="34dp"
         android:clickable="true"
         android:focusable="true"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="8dp"
-        app:layout_constraintTop_toBottomOf="@id/btnElderly"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/btnElderly">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="30dp"
+            android:layout_height="150dp"
+            android:background="@drawable/bg_panel"
             android:gravity="center"
-            android:background="#F1F8E9">
+            android:orientation="vertical"
+            android:padding="24dp">
 
             <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:contentDescription="보호자"
                 android:src="@android:drawable/ic_menu_view"
-                app:tint="#388E3C" />
+                app:tint="@color/success" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:text="보호자"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="#388E3C"
-                android:layout_marginTop="10dp" />
+                android:textColor="@color/text_primary"
+                android:textSize="25sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="위치를 확인하고 싶은 분"
-                android:textSize="16sp"
-                android:textColor="#666666" />
+                android:textColor="@color/text_secondary"
+                android:textSize="15sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

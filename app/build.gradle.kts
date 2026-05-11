@@ -39,6 +39,12 @@ android {
             "TMAP_API_KEY",
             "\"${localProperties.getProperty("TMAP_API_KEY", "")}\""
         )
+
+        buildConfigField(
+            "String",
+            "KAKAO_MAP_NATIVE_KEY",
+            "\"${localProperties.getProperty("KAKAO_MAP_NATIVE_KEY", "")}\""
+        )
     }
 
     buildTypes {
@@ -65,6 +71,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
 
     implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.kakao.maps.open:android:2.13.1")
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth.ktx)
@@ -73,4 +80,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(platform("com.google.firebase:firebase-bom:34.12.0"))
+    implementation("com.google.firebase:firebase-analytics")
 }

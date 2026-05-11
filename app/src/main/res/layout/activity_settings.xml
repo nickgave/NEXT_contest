@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@drawable/bg_screen">
 
     <!-- 상단 바 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="#757575"
+        android:background="@color/primary_dark"
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
@@ -55,7 +55,7 @@
             android:text="보호자/어르신 연결"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#333333"
+            android:textColor="@color/text_primary"
             android:layout_marginBottom="10dp"/>
 
         <TextView
@@ -64,8 +64,19 @@
             android:layout_height="wrap_content"
             android:text="연결할 상대방의 전화번호를 입력해주세요."
             android:textSize="16sp"
-            android:textColor="#666666"
+            android:textColor="@color/text_secondary"
             android:layout_marginBottom="20dp"/>
+
+        <TextView
+            android:id="@+id/tvPairingStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="연결 상태를 확인 중입니다."
+            android:textSize="16sp"
+            android:textColor="@color/text_primary"
+            android:background="@drawable/bg_status"
+            android:padding="14dp"
+            android:layout_marginBottom="16dp"/>
 
         <EditText
             android:id="@+id/etTargetPhoneNumber"
@@ -74,15 +85,15 @@
             android:hint="상대방 전화번호 (- 제외)"
             android:inputType="phone"
             android:padding="15dp"
-            android:background="@android:drawable/editbox_background"
+            android:background="@drawable/bg_input"
             android:layout_marginBottom="20dp"/>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/btnSubmitPairing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="15dp"
-            app:cardBackgroundColor="#4CAF50"
+            app:cardCornerRadius="8dp"
+            app:cardBackgroundColor="@color/primary"
             android:clickable="true"
             android:focusable="true">
 
@@ -96,6 +107,22 @@
                 android:layout_gravity="center"
                 android:padding="15dp"/>
         </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btnAcceptPairingRequest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="연결 수락하기"
+            android:layout_marginTop="12dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnCancelPairingRequest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="취소하기"
+            android:layout_marginTop="12dp"
+            android:visibility="gone" />
 
     </LinearLayout>
 

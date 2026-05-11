@@ -2,4 +2,16 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="app_bg">#F6F7F4</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_muted">#EEF2EF</color>
+    <color name="text_primary">#1F2933</color>
+    <color name="text_secondary">#5F6B76</color>
+    <color name="primary">#2F6F73</color>
+    <color name="primary_dark">#214E52</color>
+    <color name="accent">#E07A5F</color>
+    <color name="success">#2E7D50</color>
+    <color name="warning">#C77D2D</color>
+    <color name="danger">#C94C4C</color>
+    <color name="stroke">#DDE3E0</color>
 </resources>

@@ -1,6 +1,7 @@
 package com.example.next_contest
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -17,6 +18,8 @@ import com.example.next_contest.controller.DailyInfoController
 import com.example.next_contest.controller.HomeNavigationController
 import com.example.next_contest.controller.AuthController
 import com.example.next_contest.controller.MainMenuController
+import com.example.next_contest.controller.PairedLocationMapController
+import com.example.next_contest.controller.PatientLocationShareController
 import com.example.next_contest.controller.SimpleScreenController
 
 class MainActivity : AppCompatActivity() {
@@ -28,6 +31,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var homeNavigationController: HomeNavigationController
     private lateinit var authController: AuthController
     private lateinit var mainMenuController: MainMenuController
+    private lateinit var pairedLocationMapController: PairedLocationMapController
+    private lateinit var patientLocationShareController: PatientLocationShareController
     private lateinit var simpleScreenController: SimpleScreenController
     private var currentDegree = 0f
     private var userRole: UserRole = UserRole.ELDERLY
@@ -66,6 +71,8 @@ class MainActivity : AppCompatActivity() {
         initDailyInfoController()
         initHomeNavigationController()
         initMainMenuController()
+        initPatientLocationShareController()
+        initPairedLocationMapController()
         initSimpleScreenController()
     }
 
@@ -129,7 +136,7 @@ class MainActivity : AppCompatActivity() {
                 showDailyInfo()
             },
             onShowMap = {
-                showMapScreen()
+                showLocationScreen()
             },
             onShowHelp = {
                 showHelpScreen()
@@ -160,6 +167,30 @@ class MainActivity : AppCompatActivity() {
             },
             onBackToGuardianMain = {
                 showGuardianMainScreen()
+            },
+            pairedLocationMapController = pairedLocationMapController
+        )
+    }
+
+    private fun initPatientLocationShareController() {
+        patientLocationShareController = PatientLocationShareController(
+            activity = this,
+            fusedLocationClient = fusedLocationClient,
+            requestLocationPermission = {
+                requestPatientLocationSharingPermission()
+            }
+        )
+    }
+
+    private fun initPairedLocationMapController() {
+        pairedLocationMapController = PairedLocationMapController(
+            activity = this,
+            fusedLocationClient = fusedLocationClient,
+            getUserRole = {
+                userRole
+            },
+            requestLocationPermission = {
+                requestPairedLocationMapPermission()
             }
         )
     }
@@ -180,12 +211,30 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    private fun requestPatientLocationSharingPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            LOCATION_PERMISSION_PATIENT_SHARING
+        )
+    }
+
+    private fun requestPairedLocationMapPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            LOCATION_PERMISSION_PAIRED_MAP
+        )
+    }
+
     private fun showPatientMainScreen() {
         mainMenuController.showPatientMainScreen()
+        startPatientLocationSharing()
     }
 
     private fun showGuardianMainScreen() {
         mainMenuController.showGuardianMainScreen()
+        startPatientLocationSharing()
     }
 
     private fun showSettingsScreen() {
@@ -200,8 +249,28 @@ class MainActivity : AppCompatActivity() {
         simpleScreenController.showMapScreen()
     }
 
+    private fun showLocationScreen() {
+        if (userRole == UserRole.GUARDIAN) {
+            showTracingScreen()
+        } else {
+            showMapScreen()
+        }
+    }
+
+    private fun showTracingScreen() {
+        stopLocationUpdates()
+        if (::pairedLocationMapController.isInitialized) {
+            pairedLocationMapController.stop()
+        }
+        startActivity(Intent(this, TracingActivity::class.java))
+    }
+
     private fun showLoginScreen() {
         stopLocationUpdates()
+        if (::pairedLocationMapController.isInitialized) {
+            pairedLocationMapController.stop()
+        }
+        stopPatientLocationSharing()
         authController.showLoginScreen()
     }
 
@@ -221,6 +290,18 @@ class MainActivity : AppCompatActivity() {
     private fun stopLocationUpdates() {
         if (::homeNavigationController.isInitialized) {
             homeNavigationController.stopLocationUpdates()
+        }
+    }
+
+    private fun startPatientLocationSharing() {
+        if (::patientLocationShareController.isInitialized) {
+            patientLocationShareController.start()
+        }
+    }
+
+    private fun stopPatientLocationSharing() {
+        if (::patientLocationShareController.isInitialized) {
+            patientLocationShareController.stop()
         }
     }
 
@@ -246,6 +327,14 @@ class MainActivity : AppCompatActivity() {
             LOCATION_PERMISSION_NAVIGATION -> {
                 homeNavigationController.start()
             }
+
+            LOCATION_PERMISSION_PATIENT_SHARING -> {
+                startPatientLocationSharing()
+            }
+
+            LOCATION_PERMISSION_PAIRED_MAP -> {
+                pairedLocationMapController.start()
+            }
         }
     }
 
@@ -265,6 +354,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         stopLocationUpdates()
+        if (::pairedLocationMapController.isInitialized) {
+            pairedLocationMapController.stop()
+        }
+        stopPatientLocationSharing()
         ttsHelper.shutdown()
         super.onDestroy()
     }
@@ -272,5 +365,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val LOCATION_PERMISSION_WEATHER = 1001
         private const val LOCATION_PERMISSION_NAVIGATION = 1002
+        private const val LOCATION_PERMISSION_PATIENT_SHARING = 1003
+        private const val LOCATION_PERMISSION_PAIRED_MAP = 1004
     }
 }

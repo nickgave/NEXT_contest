@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@drawable/bg_screen">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -13,17 +14,24 @@
         <Button
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Back" />
+            android:layout_height="42dp"
+            android:backgroundTint="@color/surface_muted"
+            android:minWidth="0dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="뒤로"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
 
         <TextView
             android:id="@+id/tvTracingTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Real-time Tracking"
+            android:text="실시간 위치 추적"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/text_primary" />
     </RelativeLayout>
 
     <TextView
@@ -31,15 +39,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="No connected patient"
+        android:text="연결된 사용자가 없습니다."
+        android:textColor="@color/text_secondary"
         android:visibility="gone" />
+
+    <com.kakao.vectormap.MapView
+        android:id="@+id/liveMapView"
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/surface_muted" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/layoutSosBanner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        app:cardBackgroundColor="@android:color/holo_red_light"
+        app:cardCornerRadius="8dp"
+        app:cardBackgroundColor="@color/danger"
         android:visibility="gone">
 
         <LinearLayout
@@ -60,7 +77,7 @@
                 android:id="@+id/btnDismissSos"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dismiss" />
+                android:text="해제" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -78,31 +95,38 @@
                 android:id="@+id/tvOnlineStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Online Status" />
+                android:text="위치 상태"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvLastUpdated"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Last updated: -" />
+                android:text="마지막 수신: -"
+                android:textColor="@color/text_secondary" />
 
             <TextView
                 android:id="@+id/tvCoordinates"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lat: - Lng: -" />
+                android:text="위도: -  경도: -"
+                android:textColor="@color/text_secondary" />
 
             <TextView
                 android:id="@+id/tvDistance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Distance: -" />
+                android:text="거리: -"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvDirection"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Direction: -" />
+                android:text="방향: -"
+                android:textColor="@color/text_secondary" />
 
             <ImageView
                 android:id="@+id/ivDirectionArrow"
