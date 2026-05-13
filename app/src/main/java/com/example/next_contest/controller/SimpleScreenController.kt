@@ -19,6 +19,7 @@ class SimpleScreenController(
     private val getUserRole: () -> UserRole,
     private val onBackToPatientMain: () -> Unit,
     private val onBackToGuardianMain: () -> Unit,
+    private val onShowHomeSetting: () -> Unit,
     private val pairedLocationMapController: PairedLocationMapController,
     private val pairingService: PairingService = PairingService()
 ) {
@@ -30,6 +31,10 @@ class SimpleScreenController(
 
         activity.findViewById<Button>(R.id.btnBack).setOnClickListener {
             goBackByRole()
+        }
+
+        activity.findViewById<Button>(R.id.btnOpenHomeSetting).setOnClickListener {
+            onShowHomeSetting()
         }
 
         activity.findViewById<CardView>(R.id.btnSubmitPairing).setOnClickListener {

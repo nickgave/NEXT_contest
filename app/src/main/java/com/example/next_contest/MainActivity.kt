@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -20,7 +21,10 @@ import com.example.next_contest.controller.AuthController
 import com.example.next_contest.controller.MainMenuController
 import com.example.next_contest.controller.PairedLocationMapController
 import com.example.next_contest.controller.PatientLocationShareController
+import com.example.next_contest.controller.PlaceSettingController
 import com.example.next_contest.controller.SimpleScreenController
+import com.example.next_contest.model.SavedPlace
+import com.example.next_contest.service.PlaceService
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,26 +37,43 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mainMenuController: MainMenuController
     private lateinit var pairedLocationMapController: PairedLocationMapController
     private lateinit var patientLocationShareController: PatientLocationShareController
+    private lateinit var placeSettingController: PlaceSettingController
     private lateinit var simpleScreenController: SimpleScreenController
     private var currentDegree = 0f
     private var userRole: UserRole = UserRole.ELDERLY
+    private var currentScreen: AppScreen = AppScreen.LOGIN
+    private var lastMainBackPressedAt = 0L
+    private var homePlace: SavedPlace? = null
 
-    private val destinationLat = 37.5872
-    private val destinationLng = 127.0315
+    private val defaultHomePlace = SavedPlace(
+        latitude = 37.5872,
+        longitude = 127.0315,
+        address = "기본 집 위치"
+    )
 
     private val weatherRepository = WeatherRepository()
-    private val routeRepository = RouteRepository(
-        destinationLat = destinationLat,
-        destinationLng = destinationLng
-    )
+    private val routeRepository = RouteRepository()
+    private val placeService = PlaceService()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         initHelpers()
         initControllers()
+        configureBackNavigation()
 
         showLoginScreen()
+    }
+
+    private fun configureBackNavigation() {
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    handleBackPressed()
+                }
+            }
+        )
     }
 
     private fun initHelpers() {
@@ -73,6 +94,7 @@ class MainActivity : AppCompatActivity() {
         initMainMenuController()
         initPatientLocationShareController()
         initPairedLocationMapController()
+        initPlaceSettingController()
         initSimpleScreenController()
     }
 
@@ -109,8 +131,6 @@ class MainActivity : AppCompatActivity() {
             fusedLocationClient = fusedLocationClient,
             ttsHelper = ttsHelper,
             routeRepository = routeRepository,
-            destinationLat = destinationLat,
-            destinationLng = destinationLng,
             currentDegreeProvider = {
                 currentDegree
             },
@@ -168,7 +188,17 @@ class MainActivity : AppCompatActivity() {
             onBackToGuardianMain = {
                 showGuardianMainScreen()
             },
+            onShowHomeSetting = {
+                showHomeSettingScreen()
+            },
             pairedLocationMapController = pairedLocationMapController
+        )
+    }
+
+    private fun initPlaceSettingController() {
+        placeSettingController = PlaceSettingController(
+            activity = this,
+            placeService = placeService
         )
     }
 
@@ -228,24 +258,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showPatientMainScreen() {
+        currentScreen = AppScreen.PATIENT_MAIN
+        resetMainBackExitTimer()
         mainMenuController.showPatientMainScreen()
+        loadHomePlace()
         startPatientLocationSharing()
     }
 
     private fun showGuardianMainScreen() {
+        currentScreen = AppScreen.GUARDIAN_MAIN
+        resetMainBackExitTimer()
         mainMenuController.showGuardianMainScreen()
+        loadHomePlace()
         startPatientLocationSharing()
     }
 
     private fun showSettingsScreen() {
+        currentScreen = AppScreen.SETTINGS
         simpleScreenController.showSettingsScreen()
     }
 
     private fun showSafeZoneScreen() {
-        simpleScreenController.showSafeZoneScreen()
+        currentScreen = AppScreen.SAFE_ZONE
+        stopLocationUpdates()
+        if (::pairedLocationMapController.isInitialized) {
+            pairedLocationMapController.stop()
+        }
+        placeSettingController.showSafeZoneSetting(
+            defaultPlace = homePlace ?: defaultHomePlace,
+            onBack = {
+                showGuardianMainScreen()
+            },
+            onSaved = {
+                // Safe zone is persisted by PlaceSettingController.
+            }
+        )
     }
 
     private fun showMapScreen() {
+        currentScreen = AppScreen.MAP
         simpleScreenController.showMapScreen()
     }
 
@@ -266,6 +317,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLoginScreen() {
+        currentScreen = AppScreen.LOGIN
+        resetMainBackExitTimer()
         stopLocationUpdates()
         if (::pairedLocationMapController.isInitialized) {
             pairedLocationMapController.stop()
@@ -275,16 +328,121 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showDailyInfo() {
+        currentScreen = AppScreen.DAILY_INFO
         homeNavigationController.stopLocationUpdates()
         dailyInfoController.show()
     }
 
     private fun showHelpScreen() {
+        currentScreen = AppScreen.HELP
         simpleScreenController.showHelpScreen()
     }
 
     private fun startNavigation() {
-        homeNavigationController.start()
+        currentScreen = AppScreen.HOME_NAVIGATION
+        placeService.loadHome(
+            onSuccess = { savedHome ->
+                runOnUiThread {
+                    homePlace = savedHome
+                    homeNavigationController.start(savedHome ?: defaultHomePlace)
+                }
+            },
+            onFailure = { message ->
+                runOnUiThread {
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                    homeNavigationController.start(homePlace ?: defaultHomePlace)
+                }
+            }
+        )
+    }
+
+    private fun showHomeSettingScreen() {
+        currentScreen = AppScreen.HOME_SETTING
+        stopLocationUpdates()
+        if (::pairedLocationMapController.isInitialized) {
+            pairedLocationMapController.stop()
+        }
+        placeSettingController.showHomeSetting(
+            defaultPlace = homePlace ?: defaultHomePlace,
+            onBack = {
+                showSettingsScreen()
+            },
+            onSaved = { savedHome ->
+                homePlace = savedHome
+            }
+        )
+    }
+
+    private fun loadHomePlace() {
+        placeService.loadHome(
+            onSuccess = { savedHome ->
+                homePlace = savedHome
+            },
+            onFailure = {
+                // Home has a fallback; no need to interrupt the main screen.
+            }
+        )
+    }
+
+    private fun handleBackPressed() {
+        when (currentScreen) {
+            AppScreen.PATIENT_MAIN,
+            AppScreen.GUARDIAN_MAIN -> handleMainBackPressed()
+
+            AppScreen.LOGIN -> {
+                Toast.makeText(this, "메인 화면에서만 뒤로가기로 종료할 수 있습니다.", Toast.LENGTH_SHORT).show()
+            }
+
+            AppScreen.SETTINGS,
+            AppScreen.MAP -> {
+                if (::pairedLocationMapController.isInitialized) {
+                    pairedLocationMapController.stop()
+                }
+                goBackToMainByRole()
+            }
+
+            AppScreen.HOME_SETTING -> {
+                if (::placeSettingController.isInitialized) {
+                    placeSettingController.stop()
+                }
+                showSettingsScreen()
+            }
+
+            AppScreen.SAFE_ZONE -> {
+                if (::placeSettingController.isInitialized) {
+                    placeSettingController.stop()
+                }
+                showGuardianMainScreen()
+            }
+
+            AppScreen.DAILY_INFO,
+            AppScreen.HOME_NAVIGATION,
+            AppScreen.HELP -> showPatientMainScreen()
+        }
+    }
+
+    private fun handleMainBackPressed() {
+        val now = System.currentTimeMillis()
+
+        if (now - lastMainBackPressedAt <= MAIN_BACK_EXIT_INTERVAL_MS) {
+            finish()
+            return
+        }
+
+        lastMainBackPressedAt = now
+        Toast.makeText(this, "한 번 더 누르면 앱을 종료합니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun goBackToMainByRole() {
+        if (userRole == UserRole.GUARDIAN) {
+            showGuardianMainScreen()
+        } else {
+            showPatientMainScreen()
+        }
+    }
+
+    private fun resetMainBackExitTimer() {
+        lastMainBackPressedAt = 0L
     }
 
     private fun stopLocationUpdates() {
@@ -325,7 +483,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             LOCATION_PERMISSION_NAVIGATION -> {
-                homeNavigationController.start()
+                startNavigation()
             }
 
             LOCATION_PERMISSION_PATIENT_SHARING -> {
@@ -367,5 +525,19 @@ class MainActivity : AppCompatActivity() {
         private const val LOCATION_PERMISSION_NAVIGATION = 1002
         private const val LOCATION_PERMISSION_PATIENT_SHARING = 1003
         private const val LOCATION_PERMISSION_PAIRED_MAP = 1004
+        private const val MAIN_BACK_EXIT_INTERVAL_MS = 2000L
+    }
+
+    private enum class AppScreen {
+        LOGIN,
+        PATIENT_MAIN,
+        GUARDIAN_MAIN,
+        SETTINGS,
+        SAFE_ZONE,
+        MAP,
+        DAILY_INFO,
+        HOME_NAVIGATION,
+        HELP,
+        HOME_SETTING
     }
 }

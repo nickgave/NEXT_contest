@@ -14,6 +14,7 @@ import com.example.next_contest.BuildConfig
 import com.example.next_contest.R
 import com.example.next_contest.data.route.RouteRepository
 import com.example.next_contest.model.NavStep
+import com.example.next_contest.model.SavedPlace
 import com.example.next_contest.util.GeoUtils
 import com.example.next_contest.util.TTSHelper
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -27,8 +28,6 @@ class HomeNavigationController(
     private val fusedLocationClient: FusedLocationProviderClient,
     private val ttsHelper: TTSHelper,
     private val routeRepository: RouteRepository,
-    private val destinationLat: Double,
-    private val destinationLng: Double,
     private val currentDegreeProvider: () -> Float,
     private val requestLocationPermission: () -> Unit,
     private val onBackToPatientMain: () -> Unit
@@ -42,8 +41,13 @@ class HomeNavigationController(
     private var routeFallbackMode = false
     private var arrivedSpoken = false
     private var navSteps: List<NavStep> = emptyList()
+    private var destinationLat: Double = 0.0
+    private var destinationLng: Double = 0.0
 
-    fun start() {
+    fun start(destination: SavedPlace) {
+        destinationLat = destination.latitude
+        destinationLng = destination.longitude
+
         activity.setContentView(R.layout.activity_home_navigation)
 
         activity.findViewById<Button>(R.id.btnBack).setOnClickListener {
@@ -155,6 +159,8 @@ class HomeNavigationController(
                 val steps = routeRepository.requestRouteSteps(
                     startLat = location.latitude,
                     startLng = location.longitude,
+                    destinationLat = destinationLat,
+                    destinationLng = destinationLng,
                     apiKey = apiKey
                 )
 

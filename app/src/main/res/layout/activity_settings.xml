@@ -49,6 +49,36 @@
         app:layout_constraintTop_toBottomOf="@id/topBar">
 
         <TextView
+            android:id="@+id/tvHomeSettingTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="집 위치 설정"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvHomeSettingDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="주소를 검색하거나 지도에서 위치를 찍어 집 위치를 저장합니다."
+            android:textColor="@color/text_secondary"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btnOpenHomeSetting"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginBottom="24dp"
+            android:backgroundTint="@color/primary"
+            android:text="집 위치 설정하기"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/tvPairingTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

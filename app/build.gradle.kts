@@ -45,6 +45,12 @@ android {
             "KAKAO_MAP_NATIVE_KEY",
             "\"${localProperties.getProperty("KAKAO_MAP_NATIVE_KEY", "")}\""
         )
+
+        buildConfigField(
+            "String",
+            "KAKAO_REST_API_KEY",
+            "\"${localProperties.getProperty("KAKAO_REST_API_KEY", "")}\""
+        )
     }
 
     buildTypes {

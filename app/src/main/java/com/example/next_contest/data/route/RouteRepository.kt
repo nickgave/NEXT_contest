@@ -6,14 +6,13 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
-class RouteRepository(
-    private val destinationLat: Double,
-    private val destinationLng: Double
-) {
+class RouteRepository {
 
     fun requestRouteSteps(
         startLat: Double,
         startLng: Double,
+        destinationLat: Double,
+        destinationLng: Double,
         apiKey: String
     ): List<NavStep> {
         val url = URL("https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json")
