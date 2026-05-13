@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.view.WindowCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.example.next_contest.model.UserRole
@@ -17,6 +18,7 @@ import com.example.next_contest.data.weather.WeatherRepository
 import com.example.next_contest.data.route.RouteRepository
 import com.example.next_contest.controller.DailyInfoController
 import com.example.next_contest.controller.HomeNavigationController
+import com.example.next_contest.controller.HomeSettingTarget
 import com.example.next_contest.controller.AuthController
 import com.example.next_contest.controller.MainMenuController
 import com.example.next_contest.controller.PairedLocationMapController
@@ -25,6 +27,7 @@ import com.example.next_contest.controller.PlaceSettingController
 import com.example.next_contest.controller.SimpleScreenController
 import com.example.next_contest.model.SavedPlace
 import com.example.next_contest.service.PlaceService
+import com.example.next_contest.util.applySystemBarInsetsToContent
 
 class MainActivity : AppCompatActivity() {
 
@@ -57,12 +60,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         initHelpers()
         initControllers()
         configureBackNavigation()
 
         restoreSessionOrShowLoginScreen()
+    }
+
+    override fun setContentView(layoutResID: Int) {
+        super.setContentView(layoutResID)
+        applySystemBarInsetsToContent()
     }
 
     private fun configureBackNavigation() {
@@ -378,13 +387,27 @@ class MainActivity : AppCompatActivity() {
         if (::pairedLocationMapController.isInitialized) {
             pairedLocationMapController.stop()
         }
+
+        val homeSettingTarget = if (userRole == UserRole.GUARDIAN) {
+            HomeSettingTarget.PAIRED_ELDERLY
+        } else {
+            HomeSettingTarget.CURRENT_USER
+        }
+
         placeSettingController.showHomeSetting(
-            defaultPlace = homePlace ?: defaultHomePlace,
+            defaultPlace = if (homeSettingTarget == HomeSettingTarget.CURRENT_USER) {
+                homePlace ?: defaultHomePlace
+            } else {
+                defaultHomePlace
+            },
+            target = homeSettingTarget,
             onBack = {
                 showSettingsScreen()
             },
             onSaved = { savedHome ->
-                homePlace = savedHome
+                if (homeSettingTarget == HomeSettingTarget.CURRENT_USER) {
+                    homePlace = savedHome
+                }
             }
         )
     }
@@ -405,9 +428,7 @@ class MainActivity : AppCompatActivity() {
             AppScreen.PATIENT_MAIN,
             AppScreen.GUARDIAN_MAIN -> handleMainBackPressed()
 
-            AppScreen.LOGIN -> {
-                Toast.makeText(this, "메인 화면에서만 뒤로가기로 종료할 수 있습니다.", Toast.LENGTH_SHORT).show()
-            }
+            AppScreen.LOGIN -> handleMainBackPressed()
 
             AppScreen.SETTINGS,
             AppScreen.MAP -> {

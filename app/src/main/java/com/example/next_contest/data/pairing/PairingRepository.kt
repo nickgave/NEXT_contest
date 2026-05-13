@@ -155,6 +155,28 @@ class PairingRepository(
         removeRequest(request, onSuccess, onFailure)
     }
 
+    fun disconnectPairing(
+        currentUid: String,
+        pairedUid: String,
+        onSuccess: () -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        val updates = hashMapOf<String, Any?>(
+            "users/$currentUid/pairedUid" to null,
+            "users/$currentUid/pairedAt" to null,
+            "users/$pairedUid/pairedUid" to null,
+            "users/$pairedUid/pairedAt" to null
+        )
+
+        db.updateChildren(updates)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { error ->
+                onFailure(error.message ?: "알 수 없는 오류")
+            }
+    }
+
     fun acceptRequest(
         request: PairingRequestInfo,
         guardianUid: String,

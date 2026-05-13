@@ -1,159 +1,278 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/settingsScroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_screen">
-
-    <!-- 상단 바 -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/topBar"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@color/primary_dark"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:background="@android:color/transparent"
-            android:text="← 뒤로"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tvSettingsTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="설정"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    android:background="@drawable/bg_screen"
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true"
+    android:paddingTop="6dp"
+    android:paddingBottom="14dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp"
-        app:layout_constraintTop_toBottomOf="@id/topBar">
+        android:paddingStart="38dp"
+        android:paddingEnd="38dp">
 
-        <TextView
-            android:id="@+id/tvHomeSettingTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="집 위치 설정"
-            android:textColor="@color/text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvHomeSettingDesc"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:text="주소를 검색하거나 지도에서 위치를 찍어 집 위치를 저장합니다."
-            android:textColor="@color/text_secondary"
-            android:textSize="15sp" />
+            android:layout_height="38dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnOpenHomeSetting"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginBottom="24dp"
-            android:backgroundTint="@color/primary"
-            android:text="집 위치 설정하기"
-            android:textColor="@color/white"
-            android:textSize="17sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvPairingTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="보호자/어르신 연결"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginBottom="10dp"/>
-
-        <TextView
-            android:id="@+id/tvPairingDesc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="연결할 상대방의 전화번호를 입력해주세요."
-            android:textSize="16sp"
-            android:textColor="@color/text_secondary"
-            android:layout_marginBottom="20dp"/>
-
-        <TextView
-            android:id="@+id/tvPairingStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="연결 상태를 확인 중입니다."
-            android:textSize="16sp"
-            android:textColor="@color/text_primary"
-            android:background="@drawable/bg_status"
-            android:padding="14dp"
-            android:layout_marginBottom="16dp"/>
-
-        <EditText
-            android:id="@+id/etTargetPhoneNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="상대방 전화번호 (- 제외)"
-            android:inputType="phone"
-            android:padding="15dp"
-            android:background="@drawable/bg_input"
-            android:layout_marginBottom="20dp"/>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/btnSubmitPairing"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="8dp"
-            app:cardBackgroundColor="@color/primary"
-            android:clickable="true"
-            android:focusable="true">
+            <Button
+                android:id="@+id/btnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:background="@drawable/bg_chip"
+                android:minWidth="0dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="뒤로"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tvSettingsTitle"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="연결 요청하기"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_gravity="center"
-                android:padding="15dp"/>
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="설정"
+                android:textColor="@color/text_primary"
+                android:textSize="21sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_panel"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/bg_icon_soft">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="집 위치"
+                            android:src="@drawable/ic_home"
+                            app:tint="@color/primary" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/tvHomeSettingTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:text="집 위치 설정"
+                        android:textColor="@color/text_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvHomeSettingDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="주소를 검색하거나 지도에서 위치를 찍어 집 위치를 저장합니다."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvHomeSettingCurrentAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_status"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:padding="10dp"
+                    android:text="현재 집 주소를 확인 중입니다."
+                    android:textColor="@color/text_primary"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/btnOpenHomeSetting"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_primary_button"
+                    android:drawableStart="@drawable/ic_location_pin"
+                    android:drawablePadding="8dp"
+                    android:text="집 위치 설정하기"
+                    android:textColor="@color/text_inverse"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:drawableTint="@color/text_inverse" />
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <Button
-            android:id="@+id/btnAcceptPairingRequest"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="연결 수락하기"
-            android:layout_marginTop="12dp"
-            android:visibility="gone" />
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp">
 
-        <Button
-            android:id="@+id/btnCancelPairingRequest"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="취소하기"
-            android:layout_marginTop="12dp"
-            android:visibility="gone" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_panel"
+                android:orientation="vertical"
+                android:padding="14dp">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/bg_icon_soft">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="연결"
+                            android:src="@drawable/ic_shield"
+                            app:tint="@color/success" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/tvPairingTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:text="보호자/어르신 연결"
+                        android:textColor="@color/text_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvPairingDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="연결할 상대방의 전화번호를 입력해주세요."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvPairingStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_status"
+                    android:padding="10dp"
+                    android:text="연결 상태를 확인 중입니다."
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/etTargetPhoneNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_input"
+                    android:drawableStart="@drawable/ic_phone"
+                    android:drawablePadding="10dp"
+                    android:hint="상대방 전화번호 (- 제외)"
+                    android:inputType="phone"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    app:drawableTint="@color/text_secondary" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/btnSubmitPairing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:cardBackgroundColor="@color/primary"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:gravity="center"
+                        android:text="연결 요청하기"
+                        android:textColor="@color/text_inverse"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </androidx.cardview.widget.CardView>
+
+                <Button
+                    android:id="@+id/btnAcceptPairingRequest"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_primary_button"
+                    android:text="연결 수락하기"
+                    android:textColor="@color/text_inverse"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btnCancelPairingRequest"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_button_secondary"
+                    android:text="취소하기"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btnDisconnectPairing"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_button_danger"
+                    android:text="연결 해제하기"
+                    android:textColor="@color/text_inverse"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

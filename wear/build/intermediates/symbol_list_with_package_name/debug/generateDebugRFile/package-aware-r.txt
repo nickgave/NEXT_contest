@@ -9,6 +9,7 @@ color wear_screen
 color wear_text
 color wear_warning
 drawable ic_stat_location
+drawable wear_arrow_up
 drawable wear_bg_button_danger
 drawable wear_bg_button_primary
 drawable wear_bg_button_secondary
@@ -20,12 +21,12 @@ id btnHelpBack
 id btnLogin
 id btnLogout
 id btnRepeat
-id btnStartNavigation
-id btnStopNavigation
 id btnWatchCallCaregiver
 id btnWatchCallPolice
 id etEmail
 id etPassword
+id imgDirectionArrow
+id layoutNavigationFace
 id tvDirection
 id tvDistance
 id tvHelpStatus
@@ -34,7 +35,6 @@ id tvHomeAddress
 id tvInstruction
 id tvLoginStatus
 id tvLoginTitle
-id tvMainTitle
 id tvTrackingStatus
 layout activity_watch_help
 layout activity_watch_login

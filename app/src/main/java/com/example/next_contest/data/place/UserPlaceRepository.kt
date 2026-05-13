@@ -19,12 +19,29 @@ class UserPlaceRepository(
         loadPlace("homeLocation", onSuccess, onFailure)
     }
 
+    fun loadHomeForUser(
+        uid: String,
+        onSuccess: (SavedPlace?) -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        loadPlaceForUser(uid, "homeLocation", onSuccess, onFailure)
+    }
+
     fun saveHome(
         place: SavedPlace,
         onSuccess: () -> Unit,
         onFailure: (message: String) -> Unit
     ) {
         savePlace("homeLocation", place.copy(radiusMeters = null), onSuccess, onFailure)
+    }
+
+    fun saveHomeForUser(
+        uid: String,
+        place: SavedPlace,
+        onSuccess: () -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        savePlaceForUser(uid, "homeLocation", place.copy(radiusMeters = null), onSuccess, onFailure)
     }
 
     fun loadSafeZone(
@@ -53,6 +70,15 @@ class UserPlaceRepository(
             return
         }
 
+        loadPlaceForUser(uid, childName, onSuccess, onFailure)
+    }
+
+    private fun loadPlaceForUser(
+        uid: String,
+        childName: String,
+        onSuccess: (SavedPlace?) -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
         db.child("users")
             .child(uid)
             .child(childName)
@@ -77,6 +103,16 @@ class UserPlaceRepository(
             return
         }
 
+        savePlaceForUser(uid, childName, place, onSuccess, onFailure)
+    }
+
+    private fun savePlaceForUser(
+        uid: String,
+        childName: String,
+        place: SavedPlace,
+        onSuccess: () -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
         val values = hashMapOf<String, Any?>(
             "latitude" to place.latitude,
             "longitude" to place.longitude,

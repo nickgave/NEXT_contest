@@ -172,6 +172,46 @@ class PairingService(
         )
     }
 
+    fun disconnectPairing(
+        onSuccess: () -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        val currentUid = pairingRepository.getCurrentUid()
+
+        if (currentUid == null) {
+            onFailure("로그인이 필요합니다.")
+            return
+        }
+
+        pairingRepository.loadUserProfile(
+            uid = currentUid,
+            onSuccess = { currentProfile ->
+                if (currentProfile == null) {
+                    onFailure("내 회원 정보를 찾지 못했습니다.")
+                    return@loadUserProfile
+                }
+
+                val pairedUid = currentProfile.pairedUid
+                if (pairedUid.isNullOrBlank()) {
+                    onFailure("연결된 사용자가 없습니다.")
+                    return@loadUserProfile
+                }
+
+                pairingRepository.disconnectPairing(
+                    currentUid = currentUid,
+                    pairedUid = pairedUid,
+                    onSuccess = onSuccess,
+                    onFailure = { message ->
+                        onFailure("연결 해제 실패: $message")
+                    }
+                )
+            },
+            onFailure = { message ->
+                onFailure("내 회원 정보 조회 실패: $message")
+            }
+        )
+    }
+
     private fun loadConnectedState(
         pairedUid: String,
         onSuccess: (PairingViewState) -> Unit,

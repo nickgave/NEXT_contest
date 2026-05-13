@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/wear_bg_screen"
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    android:overScrollMode="never"
+    android:paddingStart="32dp"
+    android:paddingTop="24dp"
+    android:paddingEnd="32dp"
+    android:paddingBottom="28dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnHelpBack"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:background="@drawable/wear_bg_button_secondary"
+            android:includeFontPadding="false"
+            android:text="뒤로"
+            android:textAllCaps="false"
+            android:textColor="@color/wear_muted"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/tvHelpTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="도움 요청"
+            android:textColor="@color/wear_danger"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvHelpStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="필요한 연락을 선택하세요."
+            android:textColor="@color/wear_muted"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnWatchCallCaregiver"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/wear_bg_button_primary"
+            android:includeFontPadding="false"
+            android:text="보호자 전화"
+            android:textAllCaps="false"
+            android:textColor="#052314"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnWatchCallPolice"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/wear_bg_button_danger"
+            android:includeFontPadding="false"
+            android:text="112 전화"
+            android:textAllCaps="false"
+            android:textColor="#260909"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</ScrollView>

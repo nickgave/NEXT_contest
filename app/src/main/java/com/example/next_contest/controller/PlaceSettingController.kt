@@ -13,6 +13,11 @@ import com.example.next_contest.model.SavedPlace
 import com.example.next_contest.service.PlaceService
 import com.kakao.vectormap.MapView
 
+enum class HomeSettingTarget {
+    CURRENT_USER,
+    PAIRED_ELDERLY
+}
+
 class PlaceSettingController(
     private val activity: AppCompatActivity,
     private val placeService: PlaceService = PlaceService()
@@ -28,15 +33,18 @@ class PlaceSettingController(
     private var selectedPlace: SavedPlace? = null
     private var radiusMeters: Int = DEFAULT_RADIUS_METERS
     private var currentMode: PlaceSettingMode = PlaceSettingMode.HOME
+    private var currentHomeTarget: HomeSettingTarget = HomeSettingTarget.CURRENT_USER
 
     fun showHomeSetting(
         defaultPlace: SavedPlace,
+        target: HomeSettingTarget = HomeSettingTarget.CURRENT_USER,
         onBack: () -> Unit,
         onSaved: (SavedPlace) -> Unit
     ) {
         show(
             mode = PlaceSettingMode.HOME,
             defaultPlace = defaultPlace,
+            homeTarget = target,
             onBack = onBack,
             onSaved = onSaved
         )
@@ -50,6 +58,7 @@ class PlaceSettingController(
         show(
             mode = PlaceSettingMode.SAFE_ZONE,
             defaultPlace = defaultPlace,
+            homeTarget = HomeSettingTarget.CURRENT_USER,
             onBack = onBack,
             onSaved = onSaved
         )
@@ -64,27 +73,21 @@ class PlaceSettingController(
     private fun show(
         mode: PlaceSettingMode,
         defaultPlace: SavedPlace,
+        homeTarget: HomeSettingTarget,
         onBack: () -> Unit,
         onSaved: (SavedPlace) -> Unit
     ) {
         stop()
         currentMode = mode
+        currentHomeTarget = homeTarget
         selectedPlace = null
         radiusMeters = DEFAULT_RADIUS_METERS
 
         activity.setContentView(R.layout.activity_place_setting)
         bindViews()
 
-        titleText.text = if (mode == PlaceSettingMode.HOME) {
-            "집 설정"
-        } else {
-            "안전구역 설정"
-        }
-        saveButton.text = if (mode == PlaceSettingMode.HOME) {
-            "집 위치 저장"
-        } else {
-            "안전구역 저장"
-        }
+        titleText.text = makeTitle(mode, homeTarget)
+        saveButton.text = makeSaveButtonText(mode, homeTarget)
         radiusLayout.visibility = if (mode == PlaceSettingMode.SAFE_ZONE) View.VISIBLE else View.GONE
 
         mapController = KakaoPlacePickerMapController(
@@ -165,7 +168,11 @@ class PlaceSettingController(
         }
 
         if (mode == PlaceSettingMode.HOME) {
-            placeService.loadHome(onSuccess, onFailure)
+            if (currentHomeTarget == HomeSettingTarget.PAIRED_ELDERLY) {
+                placeService.loadPairedElderlyHome(onSuccess, onFailure)
+            } else {
+                placeService.loadHome(onSuccess, onFailure)
+            }
         } else {
             placeService.loadSafeZone(onSuccess, onFailure)
         }
@@ -272,9 +279,35 @@ class PlaceSettingController(
         }
 
         if (currentMode == PlaceSettingMode.HOME) {
-            placeService.saveHome(finalPlace, onSuccess, onFailure)
+            if (currentHomeTarget == HomeSettingTarget.PAIRED_ELDERLY) {
+                placeService.savePairedElderlyHome(finalPlace, onSuccess, onFailure)
+            } else {
+                placeService.saveHome(finalPlace, onSuccess, onFailure)
+            }
         } else {
             placeService.saveSafeZone(finalPlace, onSuccess, onFailure)
+        }
+    }
+
+    private fun makeTitle(
+        mode: PlaceSettingMode,
+        homeTarget: HomeSettingTarget
+    ): String {
+        return when {
+            mode == PlaceSettingMode.SAFE_ZONE -> "안전구역 설정"
+            homeTarget == HomeSettingTarget.PAIRED_ELDERLY -> "어르신 집 설정"
+            else -> "집 설정"
+        }
+    }
+
+    private fun makeSaveButtonText(
+        mode: PlaceSettingMode,
+        homeTarget: HomeSettingTarget
+    ): String {
+        return when {
+            mode == PlaceSettingMode.SAFE_ZONE -> "안전구역 저장"
+            homeTarget == HomeSettingTarget.PAIRED_ELDERLY -> "어르신 집 위치 저장"
+            else -> "집 위치 저장"
         }
     }
 

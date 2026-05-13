@@ -7,14 +7,17 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import com.example.next_contest.R
+import com.example.next_contest.model.SavedPlace
 import com.example.next_contest.model.UserRole
 import com.example.next_contest.service.PairingStatus
 import com.example.next_contest.service.PairingService
 import com.example.next_contest.service.PairingViewState
+import com.example.next_contest.service.PlaceService
 
 private const val POLICE_PHONE_NUMBER = "112"
 
@@ -26,13 +29,15 @@ class SimpleScreenController(
     private val onBackToGuardianMain: () -> Unit,
     private val onShowHomeSetting: () -> Unit,
     private val pairedLocationMapController: PairedLocationMapController,
-    private val pairingService: PairingService = PairingService()
+    private val pairingService: PairingService = PairingService(),
+    private val placeService: PlaceService = PlaceService()
 ) {
 
     fun showSettingsScreen() {
         stopNavigation()
         pairedLocationMapController.stop()
         activity.setContentView(R.layout.activity_settings)
+        configureHomeSettingSection()
 
         activity.findViewById<Button>(R.id.btnBack).setOnClickListener {
             goBackByRole()
@@ -108,6 +113,10 @@ class SimpleScreenController(
                     }
                 }
             )
+        }
+
+        activity.findViewById<Button>(R.id.btnDisconnectPairing).setOnClickListener {
+            showDisconnectConfirmDialog()
         }
 
         refreshPairingState()
@@ -210,6 +219,100 @@ class SimpleScreenController(
         )
     }
 
+    private fun configureHomeSettingSection() {
+        val title = activity.findViewById<TextView>(R.id.tvHomeSettingTitle)
+        val desc = activity.findViewById<TextView>(R.id.tvHomeSettingDesc)
+        val currentAddress = activity.findViewById<TextView>(R.id.tvHomeSettingCurrentAddress)
+        val button = activity.findViewById<Button>(R.id.btnOpenHomeSetting)
+
+        if (getUserRole() == UserRole.GUARDIAN) {
+            title.text = "어르신 집 위치 설정"
+            desc.text = "연결된 어르신의 집 주소를 검색하거나 지도에서 위치를 찍어 저장합니다."
+            button.text = "어르신 집 위치 설정하기"
+            currentAddress.text = "현재 어르신 집 주소를 확인 중입니다."
+            loadCurrentHomeAddress(
+                load = { onSuccess, onFailure ->
+                    placeService.loadPairedElderlyHome(onSuccess, onFailure)
+                },
+                prefix = "현재 어르신 집"
+            )
+        } else {
+            title.text = "집 위치 설정"
+            desc.text = "주소를 검색하거나 지도에서 위치를 찍어 집 위치를 저장합니다."
+            button.text = "집 위치 설정하기"
+            currentAddress.text = "현재 집 주소를 확인 중입니다."
+            loadCurrentHomeAddress(
+                load = { onSuccess, onFailure ->
+                    placeService.loadHome(onSuccess, onFailure)
+                },
+                prefix = "현재 집"
+            )
+        }
+    }
+
+    private fun loadCurrentHomeAddress(
+        load: (
+            onSuccess: (SavedPlace?) -> Unit,
+            onFailure: (String) -> Unit
+        ) -> Unit,
+        prefix: String
+    ) {
+        val currentAddress = activity.findViewById<TextView>(R.id.tvHomeSettingCurrentAddress)
+
+        load(
+            { place ->
+                activity.runOnUiThread {
+                    currentAddress.text = if (place == null) {
+                        "$prefix: 아직 설정되지 않았습니다."
+                    } else {
+                        "$prefix: ${place.address}"
+                    }
+                }
+            },
+            { message ->
+                activity.runOnUiThread {
+                    currentAddress.text = "$prefix: 불러오지 못했습니다. $message"
+                }
+            }
+        )
+    }
+
+    private fun showDisconnectConfirmDialog() {
+        AlertDialog.Builder(activity)
+            .setTitle("연결 해제")
+            .setMessage("현재 연결된 사용자와 연결을 해제할까요?")
+            .setNegativeButton("취소", null)
+            .setPositiveButton("해제") { _, _ ->
+                disconnectPairing()
+            }
+            .show()
+    }
+
+    private fun disconnectPairing() {
+        val disconnectButton = activity.findViewById<Button>(R.id.btnDisconnectPairing)
+        disconnectButton.isEnabled = false
+        disconnectButton.alpha = 0.6f
+
+        pairingService.disconnectPairing(
+            onSuccess = {
+                activity.runOnUiThread {
+                    pairedLocationMapController.stop()
+                    Toast.makeText(activity, "연결을 해제했습니다.", Toast.LENGTH_SHORT).show()
+                    disconnectButton.isEnabled = true
+                    disconnectButton.alpha = 1.0f
+                    refreshPairingState()
+                }
+            },
+            onFailure = { message ->
+                activity.runOnUiThread {
+                    Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+                    disconnectButton.isEnabled = true
+                    disconnectButton.alpha = 1.0f
+                }
+            }
+        )
+    }
+
     private fun openDialer(phoneNumber: String) {
         val intent = Intent(Intent.ACTION_DIAL).apply {
             data = Uri.parse("tel:$phoneNumber")
@@ -251,6 +354,7 @@ class SimpleScreenController(
         val submitButton = activity.findViewById<CardView>(R.id.btnSubmitPairing)
         val acceptButton = activity.findViewById<Button>(R.id.btnAcceptPairingRequest)
         val cancelButton = activity.findViewById<Button>(R.id.btnCancelPairingRequest)
+        val disconnectButton = activity.findViewById<Button>(R.id.btnDisconnectPairing)
 
         acceptButton.tag = state.requestId
         cancelButton.tag = state.requestId
@@ -262,6 +366,7 @@ class SimpleScreenController(
                 submitButton.visibility = View.VISIBLE
                 acceptButton.visibility = View.GONE
                 cancelButton.visibility = View.GONE
+                disconnectButton.visibility = View.GONE
             }
 
             PairingStatus.CONNECTED -> {
@@ -270,6 +375,7 @@ class SimpleScreenController(
                 submitButton.visibility = View.GONE
                 acceptButton.visibility = View.GONE
                 cancelButton.visibility = View.GONE
+                disconnectButton.visibility = View.VISIBLE
             }
 
             PairingStatus.OUTGOING_REQUEST -> {
@@ -279,6 +385,7 @@ class SimpleScreenController(
                 acceptButton.visibility = View.GONE
                 cancelButton.visibility = View.VISIBLE
                 cancelButton.text = "취소하기"
+                disconnectButton.visibility = View.GONE
             }
 
             PairingStatus.INCOMING_REQUEST -> {
@@ -288,6 +395,7 @@ class SimpleScreenController(
                 acceptButton.visibility = View.VISIBLE
                 cancelButton.visibility = View.VISIBLE
                 cancelButton.text = "거절하기"
+                disconnectButton.visibility = View.GONE
             }
         }
     }

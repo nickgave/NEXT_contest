@@ -10,9 +10,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +28,7 @@ import com.example.next_contest.wear.data.UserPlaceRepository;
 import com.example.next_contest.wear.model.NavStep;
 import com.example.next_contest.wear.model.SavedPlace;
 import com.example.next_contest.wear.util.GeoUtils;
+import com.example.next_contest.wear.util.WearCompassHelper;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -58,6 +59,7 @@ public class WatchMainActivity extends Activity {
 
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback navigationLocationCallback;
+    private WearCompassHelper compassHelper;
     private TextToSpeech textToSpeech;
     private Screen currentScreen = Screen.LOGIN;
     private SavedPlace homePlace;
@@ -69,16 +71,32 @@ public class WatchMainActivity extends Activity {
     private boolean routeFallbackMode;
     private boolean arrivedSpoken;
     private boolean pendingNavigationStart;
+    private boolean ttsReady;
+    private float currentDegree;
+    private Float lastDestinationBearing;
     private String lastSpokenMessage = "";
+    private String pendingSpokenMessage = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        compassHelper = new WearCompassHelper(this, degree -> {
+            currentDegree = degree;
+            updateArrowRotation();
+        });
         textToSpeech = new TextToSpeech(this, status -> {
             if (status == TextToSpeech.SUCCESS) {
-                textToSpeech.setLanguage(Locale.KOREAN);
+                int languageResult = textToSpeech.setLanguage(Locale.KOREAN);
+                textToSpeech.setSpeechRate(0.92f);
+                textToSpeech.setPitch(1.0f);
+                ttsReady = languageResult != TextToSpeech.LANG_MISSING_DATA
+                        && languageResult != TextToSpeech.LANG_NOT_SUPPORTED;
+                if (ttsReady && !pendingSpokenMessage.trim().isEmpty()) {
+                    speakNow(pendingSpokenMessage);
+                    pendingSpokenMessage = "";
+                }
             }
         });
 
@@ -159,20 +177,17 @@ public class WatchMainActivity extends Activity {
         currentScreen = Screen.MAIN;
         setContentView(R.layout.activity_watch_main);
 
-        findViewById(R.id.btnStartNavigation).setOnClickListener(view -> startHomeNavigation());
-        findViewById(R.id.btnStopNavigation).setOnClickListener(view -> stopHomeNavigation(true));
         findViewById(R.id.btnRepeat).setOnClickListener(view -> repeatLastMessage());
         findViewById(R.id.btnHelp).setOnClickListener(view -> showHelpScreen());
         findViewById(R.id.btnLogout).setOnClickListener(view -> logout());
 
-        setNavigationButtons(false);
+        updateArrowRotation();
         loadHomePlace();
         ensureLocationSharing();
         requestNotificationPermissionIfNeeded();
     }
 
     private void showHelpScreen() {
-        stopHomeNavigation(false);
         currentScreen = Screen.HELP;
         setContentView(R.layout.activity_watch_help);
 
@@ -249,13 +264,12 @@ public class WatchMainActivity extends Activity {
                     if (homePlace == null) {
                         setHomeAddressText("집 위치 없음");
                         setInstructionText("폰 앱에서 집 위치를 먼저 설정하세요.");
-                        setStartButtonEnabled(false);
                         return;
                     }
 
                     setHomeAddressText(homePlace.address);
-                    setInstructionText("집 안내를 시작할 수 있습니다.");
-                    setStartButtonEnabled(true);
+                    setInstructionText("집 방향을 확인하는 중입니다.");
+                    startHomeNavigation();
                 });
             }
 
@@ -264,7 +278,6 @@ public class WatchMainActivity extends Activity {
                 runOnUiThread(() -> {
                     setHomeAddressText("집 위치 오류");
                     setInstructionText(message);
-                    setStartButtonEnabled(false);
                 });
             }
         });
@@ -324,6 +337,10 @@ public class WatchMainActivity extends Activity {
     }
 
     private void startHomeNavigation() {
+        if (navigationLocationCallback != null) {
+            return;
+        }
+
         if (homePlace == null) {
             setInstructionText("폰 앱에서 집 위치를 먼저 설정하세요.");
             return;
@@ -340,9 +357,9 @@ public class WatchMainActivity extends Activity {
         }
 
         resetNavigationState();
-        setNavigationButtons(true);
         speak("집 안내를 시작합니다.");
         setInstructionText("현재 위치를 확인하는 중입니다.");
+        setDirectionText("화살표 안내 준비 중");
 
         LocationRequest request = new LocationRequest.Builder(
                 Priority.PRIORITY_HIGH_ACCURACY,
@@ -376,7 +393,6 @@ public class WatchMainActivity extends Activity {
                     });
         } catch (SecurityException error) {
             setInstructionText("위치 권한을 확인하지 못했습니다.");
-            setNavigationButtons(false);
             navigationLocationCallback = null;
         }
     }
@@ -387,7 +403,8 @@ public class WatchMainActivity extends Activity {
             navigationLocationCallback = null;
         }
 
-        setNavigationButtons(false);
+        lastDestinationBearing = null;
+        updateArrowRotation();
 
         if (announce) {
             speak("집 안내를 종료합니다.");
@@ -403,7 +420,9 @@ public class WatchMainActivity extends Activity {
         routeLoaded = false;
         routeFallbackMode = false;
         arrivedSpoken = false;
+        lastDestinationBearing = null;
         navSteps = new ArrayList<>();
+        updateArrowRotation();
     }
 
     private void updateNavigation(Location location) {
@@ -423,6 +442,8 @@ public class WatchMainActivity extends Activity {
                 homePlace.latitude,
                 homePlace.longitude
         );
+        lastDestinationBearing = bearing;
+        updateArrowRotation();
 
         setDistanceText(formatDistance(destinationDistance));
         setDirectionText(GeoUtils.bearingToDirectionText(bearing) + " 방향");
@@ -437,7 +458,6 @@ public class WatchMainActivity extends Activity {
                 arrivedSpoken = true;
                 speak("집에 도착했습니다.");
                 setInstructionText("집에 도착했습니다.");
-                stopHomeNavigation(false);
             }
             return;
         }
@@ -506,6 +526,7 @@ public class WatchMainActivity extends Activity {
                     routeFallbackMode = false;
                     navSteps = steps;
                     setInstructionText("경로를 찾았습니다. 안내를 시작합니다.");
+                    speak("경로를 찾았습니다. 안내를 시작합니다.");
                 });
             } catch (Exception error) {
                 runOnUiThread(() -> applyRouteFallback("경로 요청 실패: " + error.getMessage()));
@@ -522,6 +543,7 @@ public class WatchMainActivity extends Activity {
                 0
         ));
         setInstructionText(message);
+        speak("경로 안내가 어려워 집 방향 화살표로 안내합니다.");
     }
 
     private void logout() {
@@ -545,26 +567,6 @@ public class WatchMainActivity extends Activity {
     private boolean hasLocationPermission() {
         return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void setNavigationButtons(boolean navigationActive) {
-        setStartButtonEnabled(!navigationActive && homePlace != null);
-
-        Button stopButton = findViewById(R.id.btnStopNavigation);
-        if (stopButton != null) {
-            stopButton.setEnabled(navigationActive);
-            stopButton.setAlpha(navigationActive ? 1.0f : 0.45f);
-        }
-    }
-
-    private void setStartButtonEnabled(boolean enabled) {
-        Button startButton = findViewById(R.id.btnStartNavigation);
-        if (startButton == null) {
-            return;
-        }
-
-        startButton.setEnabled(enabled);
-        startButton.setAlpha(enabled ? 1.0f : 0.45f);
     }
 
     private void setButtonLoading(Button button, boolean isLoading) {
@@ -607,6 +609,23 @@ public class WatchMainActivity extends Activity {
         }
     }
 
+    private void updateArrowRotation() {
+        ImageView arrow = findViewById(R.id.imgDirectionArrow);
+        if (arrow == null) {
+            return;
+        }
+
+        if (lastDestinationBearing == null) {
+            arrow.setRotation(0f);
+            arrow.setAlpha(0.35f);
+            return;
+        }
+
+        float rotation = (lastDestinationBearing - currentDegree + 360.0f) % 360.0f;
+        arrow.setRotation(rotation);
+        arrow.setAlpha(1.0f);
+    }
+
     private void setHelpStatusText(String text) {
         TextView view = findViewById(R.id.tvHelpStatus);
         if (view != null) {
@@ -615,6 +634,10 @@ public class WatchMainActivity extends Activity {
     }
 
     private String formatDistance(float distanceMeters) {
+        if (distanceMeters >= 100000f) {
+            return String.format(Locale.KOREA, "%.0f km", distanceMeters / 1000f);
+        }
+
         if (distanceMeters >= 1000f) {
             return String.format(Locale.KOREA, "%.1f km", distanceMeters / 1000f);
         }
@@ -625,6 +648,15 @@ public class WatchMainActivity extends Activity {
     private void speak(String message) {
         lastSpokenMessage = message;
 
+        if (!ttsReady || textToSpeech == null) {
+            pendingSpokenMessage = message;
+            return;
+        }
+
+        speakNow(message);
+    }
+
+    private void speakNow(String message) {
         if (textToSpeech != null) {
             textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, "watch-home-navigation");
         }
@@ -661,16 +693,33 @@ public class WatchMainActivity extends Activity {
     public void onBackPressed() {
         if (currentScreen == Screen.HELP) {
             showMainScreen();
-        } else if (navigationLocationCallback != null) {
-            stopHomeNavigation(true);
         } else {
             moveTaskToBack(true);
         }
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (compassHelper != null) {
+            compassHelper.start();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (compassHelper != null) {
+            compassHelper.stop();
+        }
+        super.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
         stopHomeNavigation(false);
+        if (compassHelper != null) {
+            compassHelper.stop();
+        }
 
         if (textToSpeech != null) {
             textToSpeech.shutdown();

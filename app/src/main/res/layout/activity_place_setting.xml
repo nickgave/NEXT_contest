@@ -3,42 +3,47 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_screen">
+    android:background="@drawable/bg_screen"
+    android:fitsSystemWindows="true"
+    android:paddingStart="14dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="14dp"
+    android:paddingBottom="6dp">
 
     <Button
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
-        android:layout_height="42dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="18dp"
-        android:backgroundTint="@color/surface_muted"
+        android:layout_height="34dp"
+        android:background="@drawable/bg_chip"
         android:minWidth="0dp"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         android:text="뒤로"
         android:textColor="@color/text_secondary"
-        android:textSize="13sp"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvPlaceTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:text="장소 설정"
         android:textColor="@color/text_primary"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/btnBack"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnBack"
         app:layout_constraintTop_toTopOf="@id/btnBack" />
 
     <com.kakao.vectormap.MapView
         android:id="@+id/placeMapView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@color/surface_muted"
         app:layout_constraintBottom_toTopOf="@id/layoutPlaceControls"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,7 +56,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/bg_panel"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:padding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -65,26 +70,34 @@
             <EditText
                 android:id="@+id/etPlaceAddress"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="44dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_input"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="8dp"
                 android:hint="주소 또는 장소 입력"
                 android:paddingStart="14dp"
                 android:paddingEnd="14dp"
                 android:singleLine="true"
                 android:textColor="@color/text_primary"
                 android:textColorHint="@color/text_secondary"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                app:drawableTint="@color/text_secondary" />
 
             <Button
                 android:id="@+id/btnSearchAddress"
-                android:layout_width="82dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="10dp"
-                android:backgroundTint="@color/primary"
+                android:layout_width="88dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_primary_button"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:minWidth="0dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
                 android:text="검색"
-                android:textColor="@color/white"
-                android:textSize="15sp"
+                android:textColor="@color/text_inverse"
+                android:textSize="14sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -92,18 +105,18 @@
             android:id="@+id/tvSelectedAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/bg_status"
-            android:padding="12dp"
+            android:padding="10dp"
             android:text="주소를 검색하거나 지도에서 위치를 선택하세요."
             android:textColor="@color/text_secondary"
-            android:textSize="14sp" />
+            android:textSize="13sp" />
 
         <LinearLayout
             android:id="@+id/layoutRadius"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:orientation="vertical"
             android:visibility="gone">
 
@@ -127,13 +140,12 @@
         <Button
             android:id="@+id/btnSavePlace"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="14dp"
-            android:backgroundTint="@color/primary"
+            android:layout_height="46dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_primary_button"
             android:text="저장"
-            android:textColor="@color/white"
-            android:textSize="17sp"
+            android:textColor="@color/text_inverse"
+            android:textSize="16sp"
             android:textStyle="bold" />
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

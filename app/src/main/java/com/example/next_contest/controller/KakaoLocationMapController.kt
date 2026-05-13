@@ -3,6 +3,7 @@ package com.example.next_contest.controller
 import android.graphics.Color
 import android.util.Log
 import com.example.next_contest.R
+import com.example.next_contest.util.createMarkerLabelStyles
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
@@ -12,10 +13,7 @@ import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelOptions
-import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
-import com.kakao.vectormap.label.LabelTextBuilder
-import com.kakao.vectormap.label.LabelTextStyle
 import com.kakao.vectormap.shape.MapPoints
 import com.kakao.vectormap.shape.Polyline
 import com.kakao.vectormap.shape.PolylineOptions
@@ -30,8 +28,6 @@ class KakaoLocationMapController(
     private var connectorLine: Polyline? = null
     private var latestMe: LatLng? = null
     private var latestOther: LatLng? = null
-    private var latestMeLabel: String = "나"
-    private var latestOtherLabel: String = "상대방"
     private var started = false
 
     fun start() {
@@ -69,6 +65,7 @@ class KakaoLocationMapController(
 
     fun onLowMemory() = Unit
 
+    @Suppress("UNUSED_PARAMETER")
     fun showLocations(
         meLat: Double?,
         meLng: Double?,
@@ -87,8 +84,6 @@ class KakaoLocationMapController(
         } else {
             null
         }
-        latestMeLabel = meLabel
-        latestOtherLabel = otherLabel
         render()
     }
 
@@ -103,17 +98,15 @@ class KakaoLocationMapController(
             kakaoMap = map,
             label = meLabel,
             position = me,
-            text = latestMeLabel,
             drawableRes = R.drawable.ic_map_marker_me,
-            textColor = Color.parseColor("#2E7D50")
+            anchorY = 0.5f
         )
         otherLabel = renderLabel(
             kakaoMap = map,
             label = otherLabel,
             position = other,
-            text = latestOtherLabel,
             drawableRes = R.drawable.ic_map_marker_other,
-            textColor = Color.parseColor("#2F6F73")
+            anchorY = 1.0f
         )
 
         connectorLine?.remove()
@@ -133,30 +126,30 @@ class KakaoLocationMapController(
         kakaoMap: KakaoMap,
         label: Label?,
         position: LatLng?,
-        text: String,
         drawableRes: Int,
-        textColor: Int
+        anchorY: Float
     ): Label? {
         if (position == null) {
             label?.remove()
             return null
         }
 
-        val styles = LabelStyles.from(
-            LabelStyle.from(drawableRes)
-                .setTextStyles(LabelTextStyle.from(LABEL_TEXT_SIZE_PX, textColor, 2, Color.WHITE))
+        val styles = createMarkerLabelStyles(
+            context = mapView.context,
+            drawableRes = drawableRes,
+            anchorY = anchorY,
+            sizeDp = MARKER_SIZE_DP
         )
 
         if (label != null) {
             label.moveTo(position)
-            label.changeStylesAndText(styles, LabelTextBuilder().setTexts(text))
+            label.changeStyles(styles)
             return label
         }
 
         return kakaoMap.labelManager?.layer?.addLabel(
             LabelOptions.from(position)
                 .setStyles(styles)
-                .setTexts(LabelTextBuilder().setTexts(text))
         )
     }
 
@@ -183,7 +176,7 @@ class KakaoLocationMapController(
         private const val TAG = "KakaoLocationMap"
         private const val CAMERA_ANIMATION_MS = 500
         private const val CAMERA_PADDING_PX = 120
-        private const val LABEL_TEXT_SIZE_PX = 28
+        private const val MARKER_SIZE_DP = 38
         private const val LINE_WIDTH_PX = 8f
         private const val SINGLE_LOCATION_ZOOM = 16
     }

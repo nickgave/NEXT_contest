@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/wear_bg_screen"
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    android:overScrollMode="never"
+    android:paddingStart="32dp"
+    android:paddingTop="28dp"
+    android:paddingEnd="32dp"
+    android:paddingBottom="28dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvLoginTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="어르신 로그인"
+            android:textColor="@color/wear_text"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvLoginStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="워치에서는 어르신 계정만 사용할 수 있어요."
+            android:textColor="@color/wear_muted"
+            android:textSize="10sp" />
+
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="12dp"
+            android:autofillHints="emailAddress"
+            android:background="@drawable/wear_bg_input"
+            android:hint="이메일"
+            android:imeOptions="actionNext"
+            android:inputType="textEmailAddress"
+            android:singleLine="true"
+            android:textColor="@color/wear_text"
+            android:textColorHint="@color/wear_muted"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="7dp"
+            android:autofillHints="password"
+            android:background="@drawable/wear_bg_input"
+            android:hint="비밀번호"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            android:textColor="@color/wear_text"
+            android:textColorHint="@color/wear_muted"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/wear_bg_button_primary"
+            android:includeFontPadding="false"
+            android:text="로그인"
+            android:textAllCaps="false"
+            android:textColor="#052314"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</ScrollView>

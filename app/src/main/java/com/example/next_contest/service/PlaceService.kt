@@ -1,6 +1,8 @@
 package com.example.next_contest.service
 
 import com.example.next_contest.BuildConfig
+import com.example.next_contest.data.pairing.PairingRepository
+import com.example.next_contest.data.pairing.PairingUserProfile
 import com.example.next_contest.data.place.KakaoLocalRepository
 import com.example.next_contest.data.place.UserPlaceRepository
 import com.example.next_contest.model.SavedPlace
@@ -8,7 +10,8 @@ import kotlin.concurrent.thread
 
 class PlaceService(
     private val localRepository: KakaoLocalRepository = KakaoLocalRepository(),
-    private val placeRepository: UserPlaceRepository = UserPlaceRepository()
+    private val placeRepository: UserPlaceRepository = UserPlaceRepository(),
+    private val pairingRepository: PairingRepository = PairingRepository()
 ) {
 
     fun loadHome(
@@ -24,6 +27,31 @@ class PlaceService(
         onFailure: (message: String) -> Unit
     ) {
         placeRepository.saveHome(place, onSuccess, onFailure)
+    }
+
+    fun loadPairedElderlyHome(
+        onSuccess: (SavedPlace?) -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        loadPairedElderlyUid(
+            onSuccess = { elderlyUid ->
+                placeRepository.loadHomeForUser(elderlyUid, onSuccess, onFailure)
+            },
+            onFailure = onFailure
+        )
+    }
+
+    fun savePairedElderlyHome(
+        place: SavedPlace,
+        onSuccess: () -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        loadPairedElderlyUid(
+            onSuccess = { elderlyUid ->
+                placeRepository.saveHomeForUser(elderlyUid, place, onSuccess, onFailure)
+            },
+            onFailure = onFailure
+        )
     }
 
     fun loadSafeZone(
@@ -104,5 +132,97 @@ class PlaceService(
                 onFailure(e.message ?: "좌표 주소 변환에 실패했습니다.")
             }
         }
+    }
+
+    private fun loadPairedElderlyUid(
+        onSuccess: (uid: String) -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        val currentUid = pairingRepository.getCurrentUid()
+        if (currentUid == null) {
+            onFailure("로그인이 필요합니다.")
+            return
+        }
+
+        pairingRepository.loadUserProfile(
+            uid = currentUid,
+            onSuccess = { currentProfile ->
+                if (currentProfile == null) {
+                    onFailure("내 회원 정보를 찾지 못했습니다.")
+                    return@loadUserProfile
+                }
+
+                validateGuardianProfile(
+                    currentProfile = currentProfile,
+                    onSuccess = { pairedUid ->
+                        loadAndValidatePairedElderly(
+                            currentUid = currentUid,
+                            pairedUid = pairedUid,
+                            onSuccess = onSuccess,
+                            onFailure = onFailure
+                        )
+                    },
+                    onFailure = onFailure
+                )
+            },
+            onFailure = { message ->
+                onFailure("내 회원 정보 조회 실패: $message")
+            }
+        )
+    }
+
+    private fun validateGuardianProfile(
+        currentProfile: PairingUserProfile,
+        onSuccess: (pairedUid: String) -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        if (normalizeRole(currentProfile.role) != AuthService.ROLE_GUARDIAN) {
+            onFailure("보호자 계정만 어르신 집 위치를 변경할 수 있습니다.")
+            return
+        }
+
+        val pairedUid = currentProfile.pairedUid
+        if (pairedUid.isNullOrBlank()) {
+            onFailure("연결된 어르신이 없습니다.")
+            return
+        }
+
+        onSuccess(pairedUid)
+    }
+
+    private fun loadAndValidatePairedElderly(
+        currentUid: String,
+        pairedUid: String,
+        onSuccess: (uid: String) -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        pairingRepository.loadUserProfile(
+            uid = pairedUid,
+            onSuccess = { pairedProfile ->
+                if (pairedProfile == null) {
+                    onFailure("연결된 어르신 정보를 찾지 못했습니다.")
+                    return@loadUserProfile
+                }
+
+                if (normalizeRole(pairedProfile.role) != AuthService.ROLE_ELDERLY) {
+                    onFailure("연결된 사용자가 어르신 계정이 아닙니다.")
+                    return@loadUserProfile
+                }
+
+                if (pairedProfile.pairedUid != currentUid) {
+                    onFailure("상호 연결 정보가 맞지 않습니다. 다시 연결해주세요.")
+                    return@loadUserProfile
+                }
+
+                onSuccess(pairedUid)
+            },
+            onFailure = { message ->
+                onFailure("연결된 어르신 조회 실패: $message")
+            }
+        )
+    }
+
+    private fun normalizeRole(role: String): String {
+        return role.trim().lowercase()
     }
 }

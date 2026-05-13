@@ -1,85 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_screen"
-    android:paddingStart="22dp"
-    android:paddingEnd="22dp">
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true"
+    android:paddingStart="20dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="14dp">
 
-    <Button
-        android:id="@+id/btnBack"
-        android:layout_width="wrap_content"
-        android:layout_height="42dp"
-        android:layout_marginTop="18dp"
-        android:backgroundTint="@color/surface_muted"
-        android:minWidth="0dp"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
-        android:text="뒤로"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvHelpTitle"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="도움이 필요하신가요?"
-        android:textColor="@color/danger"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/tvHelpDescription"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
-        app:layout_constraintVertical_chainStyle="packed" />
+        android:minHeight="0dp"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvHelpDescription"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:gravity="center"
-        android:text="아래 버튼 중 하나를 누르면 바로 도움을 요청할 수 있습니다."
-        android:textColor="@color/text_secondary"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@id/btnCallCaregiver"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvHelpTitle" />
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:background="@drawable/bg_chip"
+            android:minWidth="0dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="뒤로"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
 
-    <Button
-        android:id="@+id/btnCallCaregiver"
-        android:layout_width="0dp"
-        android:layout_height="112dp"
-        android:layout_marginTop="34dp"
-        android:backgroundTint="@color/primary"
-        android:text="보호자에게\n전화하기"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/btnCallPolice"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvHelpDescription" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="24dp" />
 
-    <Button
-        android:id="@+id/btnCallPolice"
-        android:layout_width="0dp"
-        android:layout_height="112dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="34dp"
-        android:backgroundTint="@color/danger"
-        android:text="경찰(112)에\n도움 요청"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnCallCaregiver" />
+        <TextView
+            android:id="@+id/tvHelpTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="도움 요청"
+            android:textColor="@color/danger"
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/tvHelpDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="필요한 연락처를 선택하세요."
+            android:textColor="@color/text_secondary"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btnCallCaregiver"
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_primary_button"
+            android:drawableStart="@drawable/ic_phone"
+            android:drawablePadding="12dp"
+            android:gravity="center"
+            android:text="보호자에게 전화하기"
+            android:textColor="@color/text_inverse"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:drawableTint="@color/text_inverse" />
+
+        <Button
+            android:id="@+id/btnCallPolice"
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_button_danger"
+            android:drawableStart="@drawable/ic_help_circle"
+            android:drawablePadding="12dp"
+            android:gravity="center"
+            android:text="경찰(112)에 도움 요청"
+            android:textColor="@color/text_inverse"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:drawableTint="@color/text_inverse" />
+    </LinearLayout>
+</ScrollView>

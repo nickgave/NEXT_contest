@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.view.WindowCompat
 import com.example.next_contest.util.CompassHelper
 import com.example.next_contest.util.GeoUtils
 import com.example.next_contest.util.DirectionUtils
@@ -13,6 +14,7 @@ import com.example.next_contest.model.PatientLocation
 import com.example.next_contest.data.tracking.TrackingRepository
 import com.example.next_contest.controller.TracingUiController
 import com.example.next_contest.controller.GuardianLocationController
+import com.example.next_contest.util.applySystemBarInsetsToContent
 
 class TracingActivity : AppCompatActivity() {
     private val trackingRepository = TrackingRepository()
@@ -27,6 +29,7 @@ class TracingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_tracing)
 
         compassHelper = CompassHelper(this) { degree ->
@@ -54,6 +57,11 @@ class TracingActivity : AppCompatActivity() {
         setupDismissSosButton()
         startGuardianLocationUpdates()
         startWatchingPatientLocation()
+    }
+
+    override fun setContentView(layoutResID: Int) {
+        super.setContentView(layoutResID)
+        applySystemBarInsetsToContent()
     }
 
     private fun setupBackButton() {

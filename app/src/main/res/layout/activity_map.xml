@@ -3,81 +3,80 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_screen">
+    android:background="@drawable/bg_screen"
+    android:fitsSystemWindows="true"
+    android:paddingStart="14dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="14dp"
+    android:paddingBottom="6dp">
 
     <Button
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
-        android:layout_height="42dp"
-        android:layout_margin="16dp"
-        android:backgroundTint="@color/surface_muted"
+        android:layout_height="34dp"
+        android:background="@drawable/bg_chip"
         android:minWidth="0dp"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         android:text="뒤로"
         android:textColor="@color/text_secondary"
-        android:textSize="13sp"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvMapTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:text="실시간 위치 확인"
-        android:textSize="24sp"
-        android:textStyle="bold"
         android:textColor="@color/text_primary"
-        app:layout_constraintTop_toTopOf="@id/btnBack"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/btnBack"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnBack"
+        app:layout_constraintTop_toTopOf="@id/btnBack" />
 
     <com.kakao.vectormap.MapView
         android:id="@+id/liveMapView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@color/surface_muted"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
         app:layout_constraintBottom_toTopOf="@id/layoutMapInfo"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/btnBack" />
 
     <LinearLayout
         android:id="@+id/layoutMapInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
         android:background="@drawable/bg_panel"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        android:padding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/tvMapStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="위치 정보를 불러오는 중입니다."
-            android:textSize="16sp"
             android:textColor="@color/text_primary"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvMapDistance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:text=""
-            android:textSize="15sp"
             android:textColor="@color/text_secondary"
-            android:layout_marginTop="6dp" />
+            android:textSize="14sp" />
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

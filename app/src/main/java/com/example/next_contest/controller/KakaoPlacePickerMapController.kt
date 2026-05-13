@@ -4,19 +4,16 @@ import android.graphics.Color
 import android.util.Log
 import com.example.next_contest.R
 import com.example.next_contest.model.SavedPlace
+import com.example.next_contest.util.createMarkerLabelStyles
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
-import com.kakao.vectormap.Poi
 import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelOptions
-import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
-import com.kakao.vectormap.label.LabelTextBuilder
-import com.kakao.vectormap.label.LabelTextStyle
 import com.kakao.vectormap.shape.MapPoints
 import com.kakao.vectormap.shape.Polygon
 import com.kakao.vectormap.shape.PolygonOptions
@@ -94,21 +91,21 @@ class KakaoPlacePickerMapController(
         val map = kakaoMap ?: return
         val place = latestPlace ?: return
         val position = LatLng.from(place.latitude, place.longitude)
-        val styles = LabelStyles.from(
-            LabelStyle.from(R.drawable.ic_map_marker_other)
-                .setTextStyles(LabelTextStyle.from(LABEL_TEXT_SIZE_PX, Color.parseColor("#2F6F73"), 2, Color.WHITE))
+        val styles = createMarkerLabelStyles(
+            context = mapView.context,
+            drawableRes = R.drawable.ic_map_marker_selected,
+            anchorY = 1.0f,
+            sizeDp = SELECTED_MARKER_SIZE_DP
         )
-        val labelText = LabelTextBuilder().setTexts("선택 위치")
 
         selectedLabel = if (selectedLabel == null) {
             map.labelManager?.layer?.addLabel(
                 LabelOptions.from(position)
                     .setStyles(styles)
-                    .setTexts(labelText)
             )
         } else {
             selectedLabel?.moveTo(position)
-            selectedLabel?.changeStylesAndText(styles, labelText)
+            selectedLabel?.changeStyles(styles)
             selectedLabel
         }
 
@@ -165,7 +162,7 @@ class KakaoPlacePickerMapController(
         private const val TAG = "KakaoPlacePickerMap"
         private const val CAMERA_ANIMATION_MS = 500
         private const val DEFAULT_ZOOM = 16
-        private const val LABEL_TEXT_SIZE_PX = 28
+        private const val SELECTED_MARKER_SIZE_DP = 42
         private const val CIRCLE_POINT_COUNT = 72
         private const val EARTH_RADIUS_METERS = 6378137.0
     }
