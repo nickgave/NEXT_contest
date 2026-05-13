@@ -18,8 +18,32 @@ class AuthController(
     private val authService: AuthService = AuthService()
 ) {
 
-    fun showLoginScreen() {
-        authService.signOut()
+    fun restoreSavedSession(onNoSession: () -> Unit) {
+        authService.restoreSession(
+            onSuccess = { role ->
+                activity.runOnUiThread {
+                    enterByRole(role)
+                }
+            },
+            onNoSession = {
+                activity.runOnUiThread {
+                    onNoSession()
+                }
+            },
+            onFailure = { message ->
+                activity.runOnUiThread {
+                    Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+                    onNoSession()
+                }
+            }
+        )
+    }
+
+    fun showLoginScreen(signOutFirst: Boolean = false) {
+        if (signOutFirst) {
+            authService.signOut()
+        }
+
         activity.setContentView(R.layout.activity_user_auth)
 
         activity.findViewById<TextView>(R.id.tvAuthTitle).text = "로그인"

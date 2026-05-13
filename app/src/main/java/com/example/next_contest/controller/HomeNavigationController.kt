@@ -30,7 +30,8 @@ class HomeNavigationController(
     private val routeRepository: RouteRepository,
     private val currentDegreeProvider: () -> Float,
     private val requestLocationPermission: () -> Unit,
-    private val onBackToPatientMain: () -> Unit
+    private val onBackToPatientMain: () -> Unit,
+    private val onShowHelp: () -> Unit
 ) {
     private var locationCallback: LocationCallback? = null
 
@@ -53,6 +54,11 @@ class HomeNavigationController(
         activity.findViewById<Button>(R.id.btnBack).setOnClickListener {
             stopLocationUpdates()
             onBackToPatientMain()
+        }
+
+        activity.findViewById<Button>(R.id.helpButton).setOnClickListener {
+            stopLocationUpdates()
+            onShowHelp()
         }
 
         activity.findViewById<Button>(R.id.repeatButton).setOnClickListener {

@@ -1,5 +1,8 @@
 package com.example.next_contest.controller
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -12,6 +15,8 @@ import com.example.next_contest.model.UserRole
 import com.example.next_contest.service.PairingStatus
 import com.example.next_contest.service.PairingService
 import com.example.next_contest.service.PairingViewState
+
+private const val POLICE_PHONE_NUMBER = "112"
 
 class SimpleScreenController(
     private val activity: AppCompatActivity,
@@ -167,6 +172,53 @@ class SimpleScreenController(
 
         activity.findViewById<Button>(R.id.btnBack).setOnClickListener {
             onBackToPatientMain()
+        }
+
+        activity.findViewById<Button>(R.id.btnCallCaregiver).setOnClickListener {
+            callConnectedCaregiver()
+        }
+
+        activity.findViewById<Button>(R.id.btnCallPolice).setOnClickListener {
+            openDialer(POLICE_PHONE_NUMBER)
+        }
+    }
+
+    private fun callConnectedCaregiver() {
+        pairingService.loadPairingState(
+            onSuccess = { state ->
+                activity.runOnUiThread {
+                    if (state.status != PairingStatus.CONNECTED) {
+                        Toast.makeText(activity, "연결된 보호자가 없습니다.", Toast.LENGTH_SHORT).show()
+                        return@runOnUiThread
+                    }
+
+                    val phoneNumber = state.counterpartPhone.filter { it.isDigit() || it == '+' }
+
+                    if (phoneNumber.isBlank()) {
+                        Toast.makeText(activity, "보호자 전화번호를 찾지 못했습니다.", Toast.LENGTH_SHORT).show()
+                        return@runOnUiThread
+                    }
+
+                    openDialer(phoneNumber)
+                }
+            },
+            onFailure = { message ->
+                activity.runOnUiThread {
+                    Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
+    }
+
+    private fun openDialer(phoneNumber: String) {
+        val intent = Intent(Intent.ACTION_DIAL).apply {
+            data = Uri.parse("tel:$phoneNumber")
+        }
+
+        try {
+            activity.startActivity(intent)
+        } catch (error: ActivityNotFoundException) {
+            Toast.makeText(activity, "전화 앱을 열 수 없습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 

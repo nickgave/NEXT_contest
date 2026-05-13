@@ -71,30 +71,15 @@
         android:layout_width="0dp"
         android:layout_height="112dp"
         android:layout_marginTop="14dp"
+        android:layout_marginBottom="34dp"
         android:backgroundTint="@color/danger"
         android:text="경찰(112)에\n도움 요청"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/btnSendLocation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnCallCaregiver" />
-
-    <Button
-        android:id="@+id/btnSendLocation"
-        android:layout_width="0dp"
-        android:layout_height="76dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="34dp"
-        android:backgroundTint="@color/success"
-        android:text="내 위치 알리기"
-        android:textColor="@color/white"
-        android:textSize="21sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnCallPolice" />
+        app:layout_constraintTop_toBottomOf="@id/btnCallCaregiver" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

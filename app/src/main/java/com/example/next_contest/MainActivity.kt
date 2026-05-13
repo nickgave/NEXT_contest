@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         initControllers()
         configureBackNavigation()
 
-        showLoginScreen()
+        restoreSessionOrShowLoginScreen()
     }
 
     private fun configureBackNavigation() {
@@ -139,6 +139,9 @@ class MainActivity : AppCompatActivity() {
             },
             onBackToPatientMain = {
                 showPatientMainScreen()
+            },
+            onShowHelp = {
+                showHelpScreen()
             }
         )
     }
@@ -168,7 +171,7 @@ class MainActivity : AppCompatActivity() {
                 showSafeZoneScreen()
             },
             onLogout = {
-                showLoginScreen()
+                logout()
             }
         )
     }
@@ -316,7 +319,20 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this, TracingActivity::class.java))
     }
 
-    private fun showLoginScreen() {
+    private fun restoreSessionOrShowLoginScreen() {
+        showLoginScreen(signOutFirst = false)
+        authController.restoreSavedSession(
+            onNoSession = {
+                // The login screen is already visible.
+            }
+        )
+    }
+
+    private fun logout() {
+        showLoginScreen(signOutFirst = true)
+    }
+
+    private fun showLoginScreen(signOutFirst: Boolean = false) {
         currentScreen = AppScreen.LOGIN
         resetMainBackExitTimer()
         stopLocationUpdates()
@@ -324,7 +340,7 @@ class MainActivity : AppCompatActivity() {
             pairedLocationMapController.stop()
         }
         stopPatientLocationSharing()
-        authController.showLoginScreen()
+        authController.showLoginScreen(signOutFirst)
     }
 
     private fun showDailyInfo() {

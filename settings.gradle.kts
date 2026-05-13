@@ -27,3 +27,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "NEXT_Contest"
 include(":app")
+include(":wear")

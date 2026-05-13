@@ -15,6 +15,27 @@ class AuthService(
     private val authRepository: AuthRepository = AuthRepository()
 ) {
 
+    fun restoreSession(
+        onSuccess: (role: String) -> Unit,
+        onNoSession: () -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        val uid = authRepository.getCurrentUserUid()
+
+        if (uid == null) {
+            onNoSession()
+            return
+        }
+
+        authRepository.loadUserRole(
+            uid = uid,
+            onSuccess = onSuccess,
+            onFailure = { message ->
+                onFailure("저장된 로그인 정보 확인 실패: $message")
+            }
+        )
+    }
+
     fun signOut() {
         authRepository.signOut()
     }

@@ -1,0 +1,11 @@
+<resources>
+    <color name="wear_screen">#07110D</color>
+    <color name="wear_panel">#12211A</color>
+    <color name="wear_panel_alt">#182821</color>
+    <color name="wear_text">#F5FFF9</color>
+    <color name="wear_muted">#B8C9BF</color>
+    <color name="wear_primary">#39E58A</color>
+    <color name="wear_primary_dark">#159957</color>
+    <color name="wear_warning">#F4C15D</color>
+    <color name="wear_danger">#F25F5C</color>
+</resources>

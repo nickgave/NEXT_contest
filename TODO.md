@@ -24,11 +24,6 @@
   - `users/{uid}/homeLocation`, `users/{uid}/safeZone`은 본인만 읽고 쓸 수 있게 제한한다.
   - `locations/{uid}`는 본인과 페어링된 상대만 접근할 수 있게 제한한다.
 
-- [ ] 도움 요청 화면 버튼 동작 구현하기
-  - `btnCallCaregiver`: 연결된 보호자 전화 걸기 또는 전화 앱 열기
-  - `btnCallPolice`: 112 전화 앱 열기
-  - `btnSendLocation`: 현재 위치/SOS 상태 전송
-
 ## 다음 작업
 
 - [ ] 안전구역 이탈 감지 구현하기
@@ -104,3 +99,123 @@
   - `app/src/main/java/com/example/next_contest/controller/SimpleScreenController.kt`
   - `app/src/main/java/com/example/next_contest/data/route/RouteRepository.kt`
   - `app/src/main/res/layout/activity_settings.xml`
+
+## 2026-05-13 워치 도움 요청 기능 구현 기록
+
+- 완료:
+  - [x] 워치 메인 화면에 `도움 요청` 버튼 추가
+  - [x] 워치 도움 요청 화면 추가
+  - [x] `보호자 전화` 버튼 구현
+  - [x] Firebase `users/{uid}/pairedUid`로 연결된 보호자 조회
+  - [x] 연결된 보호자의 `phoneNumber`를 읽어 전화 앱 열기
+  - [x] `112 전화` 버튼 구현
+  - [x] 전화 권한 없이 동작하도록 `ACTION_DIAL` 방식 사용
+  - [x] 워치 도움 요청 화면에서 뒤로가기 지원
+  - [x] `.\gradlew.bat :wear:assembleDebug` 통과
+  - [x] `.\gradlew.bat assembleDebug` 통과
+
+- 생성:
+  - `wear/src/main/res/layout/activity_watch_help.xml`
+  - `wear/src/main/res/drawable/wear_bg_button_danger.xml`
+  - `wear/src/main/java/com/example/next_contest/wear/data/PairingRepository.java`
+
+- 수정:
+  - `wear/src/main/res/layout/activity_watch_main.xml`
+  - `wear/src/main/res/values/colors.xml`
+  - `wear/src/main/java/com/example/next_contest/wear/WatchMainActivity.java`
+  - `TODO.md`
+
+- 삭제:
+  - 없음
+
+## 2026-05-13 도움 요청 기능 구현 기록
+
+- 완료:
+  - [x] 도움 요청 화면에서 `내 위치 알리기` 버튼 삭제
+  - [x] `보호자에게 전화하기` 버튼 구현
+  - [x] 연결된 보호자가 없거나 전화번호가 없을 때 안내 Toast 표시
+  - [x] `경찰(112)에 도움 요청` 버튼 구현
+  - [x] 전화 권한 없이 동작하도록 전화 앱을 여는 `ACTION_DIAL` 방식 사용
+  - [x] 집 안내 화면의 `도움 요청` 버튼을 도움 요청 화면으로 연결
+  - [x] `.\gradlew.bat assembleDebug` 통과
+
+- 생성:
+  - 없음
+
+- 수정:
+  - `app/src/main/res/layout/activity_seek_help.xml`
+  - `app/src/main/java/com/example/next_contest/controller/SimpleScreenController.kt`
+  - `app/src/main/java/com/example/next_contest/controller/HomeNavigationController.kt`
+  - `app/src/main/java/com/example/next_contest/MainActivity.kt`
+  - `TODO.md`
+
+- 삭제:
+  - 파일 삭제 없음
+  - `activity_seek_help.xml`의 `btnSendLocation` 버튼 제거
+
+## 2026-05-13 휴대폰 로그인 유지 기록
+
+- 완료:
+  - [x] 휴대폰 앱 시작 시 Firebase Auth 저장 세션 복구
+  - [x] 저장된 세션이 있으면 사용자 role을 읽고 어르신/보호자 메인 화면으로 자동 진입
+  - [x] 로그인 화면 진입과 실제 로그아웃 동작 분리
+  - [x] 로그아웃 버튼을 눌렀을 때만 `FirebaseAuth.signOut()` 실행
+  - [x] `.\gradlew.bat assembleDebug` 통과
+
+- 생성:
+  - 없음
+
+- 수정:
+  - `app/src/main/java/com/example/next_contest/MainActivity.kt`
+  - `app/src/main/java/com/example/next_contest/controller/AuthController.kt`
+  - `app/src/main/java/com/example/next_contest/service/AuthService.kt`
+  - `app/src/main/java/com/example/next_contest/data/auth/AuthRepository.kt`
+  - `TODO.md`
+
+- 삭제:
+  - 없음
+
+## 2026-05-13 워치 포팅 기록
+
+- 완료:
+  - [x] `wear` 모듈 추가
+  - [x] 워치에서는 어르신 계정만 로그인 허용
+  - [x] Firebase Auth 로그인 상태를 로그아웃 전까지 유지
+  - [x] 워치 로그인 후 Foreground Service로 어르신 위치 공유
+  - [x] Firebase `users/{uid}/homeLocation`을 읽어 집 안내 목적지로 사용
+  - [x] 워치 화면에서 집 안내 시작/종료/다시 듣기/로그아웃 제공
+  - [x] Tmap 키가 없거나 경로 요청이 실패하면 직선 방향 안내로 fallback
+  - [x] `.\gradlew.bat :wear:assembleDebug` 통과
+  - [x] `.\gradlew.bat assembleDebug` 통과
+
+- 생성:
+  - `wear/build.gradle.kts`
+  - `wear/proguard-rules.pro`
+  - `wear/google-services.json`
+  - `wear/src/main/AndroidManifest.xml`
+  - `wear/src/main/java/com/example/next_contest/wear/WatchMainActivity.java`
+  - `wear/src/main/java/com/example/next_contest/wear/WatchLocationService.java`
+  - `wear/src/main/java/com/example/next_contest/wear/data/AuthRepository.java`
+  - `wear/src/main/java/com/example/next_contest/wear/data/UserPlaceRepository.java`
+  - `wear/src/main/java/com/example/next_contest/wear/data/LocationSharingRepository.java`
+  - `wear/src/main/java/com/example/next_contest/wear/data/RouteRepository.java`
+  - `wear/src/main/java/com/example/next_contest/wear/model/SavedPlace.java`
+  - `wear/src/main/java/com/example/next_contest/wear/model/NavStep.java`
+  - `wear/src/main/java/com/example/next_contest/wear/util/GeoUtils.java`
+  - `wear/src/main/res/layout/activity_watch_login.xml`
+  - `wear/src/main/res/layout/activity_watch_main.xml`
+  - `wear/src/main/res/values/strings.xml`
+  - `wear/src/main/res/values/colors.xml`
+  - `wear/src/main/res/values/themes.xml`
+  - `wear/src/main/res/drawable/wear_bg_screen.xml`
+  - `wear/src/main/res/drawable/wear_bg_panel.xml`
+  - `wear/src/main/res/drawable/wear_bg_input.xml`
+  - `wear/src/main/res/drawable/wear_bg_button_primary.xml`
+  - `wear/src/main/res/drawable/wear_bg_button_secondary.xml`
+  - `wear/src/main/res/drawable/ic_stat_location.xml`
+
+- 수정:
+  - `settings.gradle.kts`: `:wear` 모듈 include 추가
+
+- 삭제:
+  - 없음

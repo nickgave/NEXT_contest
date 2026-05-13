@@ -19,6 +19,10 @@ class AuthRepository(
     private val db: DatabaseReference = FirebaseDatabase.getInstance().reference
 ) {
 
+    fun getCurrentUserUid(): String? {
+        return auth.currentUser?.uid
+    }
+
     fun signOut() {
         auth.signOut()
     }

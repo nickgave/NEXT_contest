@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="firebase_database_url" translatable="false">https://next-contest-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+    <string name="gcm_defaultSenderId" translatable="false">572962386869</string>
+    <string name="google_api_key" translatable="false">AIzaSyDhitLwSMiEGYN2OnI_diJQgP2PYqBRtV4</string>
+    <string name="google_app_id" translatable="false">1:572962386869:android:5f8b95534bc8ef4257dffc</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDhitLwSMiEGYN2OnI_diJQgP2PYqBRtV4</string>
+    <string name="google_storage_bucket" translatable="false">next-contest.firebasestorage.app</string>
+    <string name="project_id" translatable="false">next-contest</string>
+</resources>

@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "572962386869",
+    "firebase_url": "https://next-contest-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "next-contest",
+    "storage_bucket": "next-contest.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:572962386869:android:5f8b95534bc8ef4257dffc",
+        "android_client_info": {
+          "package_name": "com.example.next_contest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhitLwSMiEGYN2OnI_diJQgP2PYqBRtV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
