@@ -1,5 +1,32 @@
 # TODO
 
+## 2026-05-14 휴대폰 인증 제거 기록
+
+- 완료:
+  - [x] 회원가입 화면에서 인증번호 받기/입력/확인 UI 제거
+  - [x] Firebase PhoneAuth 인증번호 발송 코드 제거
+  - [x] email/password 계정에 phone credential을 link하던 흐름 제거
+  - [x] 회원가입은 다시 이름/전화번호/이메일/비밀번호만 받도록 변경
+  - [x] 전화번호는 기존처럼 `phoneIndex/{normalizedPhone}` 중복 확인과 사용자 검색용으로만 저장
+
+- 생성:
+  - 없음
+
+- 수정:
+  - `app/src/main/res/layout/activity_signup.xml`
+    - 휴대폰 인증 관련 입력창/버튼/상태 문구 제거
+  - `app/src/main/java/com/example/next_contest/data/auth/AuthRepository.kt`
+    - PhoneAuth import 및 인증번호 발송/credential 생성/link 메서드 제거
+  - `app/src/main/java/com/example/next_contest/service/AuthService.kt`
+    - PhoneAuth 세션/확인 모델 제거
+    - 회원가입 검증에서 휴대폰 인증 필수 조건 제거
+    - 기존 전화번호 중복 확인 기반 저장 흐름 복구
+  - `app/src/main/java/com/example/next_contest/controller/AuthController.kt`
+    - 회원가입 화면의 휴대폰 인증 상태 관리 로직 제거
+
+- 삭제:
+  - 없음
+
 ## 2026-05-14 실종 신고 / 휴대폰 인증 구현 기록
 
 - 완료:
