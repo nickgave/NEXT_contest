@@ -14,6 +14,7 @@ class MainMenuController(
     private val onShowHelp: () -> Unit,
     private val onShowSettings: () -> Unit,
     private val onShowSafeZone: () -> Unit,
+    private val onReportMissing: () -> Unit,
     private val onLogout: () -> Unit
 ) {
 
@@ -56,6 +57,10 @@ class MainMenuController(
 
         activity.findViewById<CardView>(R.id.btnSafeZone).setOnClickListener {
             onShowSafeZone()
+        }
+
+        activity.findViewById<CardView>(R.id.btnReportMissing).setOnClickListener {
+            onReportMissing()
         }
 
         activity.findViewById<Button>(R.id.btnSettings).setOnClickListener {

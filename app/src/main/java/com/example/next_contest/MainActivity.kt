@@ -1,11 +1,14 @@
 package com.example.next_contest
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
@@ -26,6 +29,7 @@ import com.example.next_contest.controller.PatientLocationShareController
 import com.example.next_contest.controller.PlaceSettingController
 import com.example.next_contest.controller.SimpleScreenController
 import com.example.next_contest.model.SavedPlace
+import com.example.next_contest.service.MissingReportService
 import com.example.next_contest.service.PlaceService
 import com.example.next_contest.util.applySystemBarInsetsToContent
 
@@ -57,6 +61,7 @@ class MainActivity : AppCompatActivity() {
     private val weatherRepository = WeatherRepository()
     private val routeRepository = RouteRepository()
     private val placeService = PlaceService()
+    private val missingReportService = MissingReportService()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -178,6 +183,9 @@ class MainActivity : AppCompatActivity() {
             },
             onShowSafeZone = {
                 showSafeZoneScreen()
+            },
+            onReportMissing = {
+                showMissingReportConfirmDialog()
             },
             onLogout = {
                 logout()
@@ -361,6 +369,49 @@ class MainActivity : AppCompatActivity() {
     private fun showHelpScreen() {
         currentScreen = AppScreen.HELP
         simpleScreenController.showHelpScreen()
+    }
+
+    private fun showMissingReportConfirmDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("실종 신고")
+            .setMessage("연결된 어르신의 마지막 위치와 신고 정보를 저장하고 112 전화 화면을 열까요?")
+            .setNegativeButton("취소", null)
+            .setPositiveButton("신고") { _, _ ->
+                submitMissingReport()
+            }
+            .show()
+    }
+
+    private fun submitMissingReport() {
+        missingReportService.submitMissingReport(
+            onSuccess = { reportId ->
+                runOnUiThread {
+                    Toast.makeText(
+                        this,
+                        "실종 신고가 저장되었습니다. 신고번호: $reportId",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    openDialer(POLICE_PHONE_NUMBER)
+                }
+            },
+            onFailure = { message ->
+                runOnUiThread {
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
+    }
+
+    private fun openDialer(phoneNumber: String) {
+        val intent = Intent(Intent.ACTION_DIAL).apply {
+            data = Uri.parse("tel:$phoneNumber")
+        }
+
+        try {
+            startActivity(intent)
+        } catch (error: ActivityNotFoundException) {
+            Toast.makeText(this, "전화 앱을 열 수 없습니다.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun startNavigation() {
@@ -563,6 +614,7 @@ class MainActivity : AppCompatActivity() {
         private const val LOCATION_PERMISSION_PATIENT_SHARING = 1003
         private const val LOCATION_PERMISSION_PAIRED_MAP = 1004
         private const val MAIN_BACK_EXIT_INTERVAL_MS = 2000L
+        private const val POLICE_PHONE_NUMBER = "112"
     }
 
     private enum class AppScreen {

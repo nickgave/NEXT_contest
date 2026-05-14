@@ -1,5 +1,50 @@
 # TODO
 
+## 2026-05-14 실종 신고 / 휴대폰 인증 구현 기록
+
+- 완료:
+  - [x] 보호자 홈의 `실종 신고` 카드에 실제 동작 연결
+  - [x] 보호자-어르신 양방향 연결 검증 후 실종 신고 생성
+  - [x] 신고 생성 시 어르신 마지막 위치를 `missingReports/{reportId}/lastLocation`에 저장
+  - [x] 신고 생성 시 `missingReportsByUser`, `missingReportsByStatus/open`, `users/{elderlyUid}/activeMissingReportId` 갱신
+  - [x] 신고 생성 시 `/locations/{elderlyUid}/sos`, `missingReported`, `missingReportId` 갱신
+  - [x] 신고 저장 후 112 전화 화면 열기
+  - [x] 회원가입 화면에 휴대폰 인증번호 발송/입력/확인 UI 추가
+  - [x] Firebase PhoneAuth 인증번호 발송 흐름 추가
+  - [x] 회원가입 시 email/password 계정에 PhoneAuth credential을 link한 뒤 사용자 프로필 저장
+  - [x] `.\gradlew.bat assembleDebug` 통과
+
+- 생성:
+  - `app/src/main/java/com/example/next_contest/data/missing/MissingReportRepository.kt`
+    - 마지막 위치 조회 및 실종 신고 Firebase 저장 처리
+  - `app/src/main/java/com/example/next_contest/service/MissingReportService.kt`
+    - 보호자 권한/연결 상태/어르신 계정 검증 후 신고 생성
+
+- 수정:
+  - `app/src/main/res/layout/activity_signup.xml`
+    - 인증번호 받기 버튼, 인증번호 입력창, 인증 확인 버튼, 인증 상태 문구 추가
+  - `app/src/main/java/com/example/next_contest/data/auth/AuthRepository.kt`
+    - Firebase PhoneAuth 인증번호 발송, credential 생성, phone credential link 기능 추가
+  - `app/src/main/java/com/example/next_contest/service/AuthService.kt`
+    - 휴대폰 인증 세션/확인 모델 추가
+    - 전화번호 중복 확인 후 인증번호 발송
+    - 회원가입 시 휴대폰 인증 완료 여부 검증
+    - Firebase용 한국 전화번호 E.164 포맷 변환 추가
+  - `app/src/main/java/com/example/next_contest/controller/AuthController.kt`
+    - 회원가입 화면에서 인증번호 발송/확인 상태 관리
+    - 전화번호 변경 시 기존 인증 상태 초기화
+  - `app/src/main/java/com/example/next_contest/controller/MainMenuController.kt`
+    - 보호자 홈의 `btnReportMissing` 클릭 이벤트 연결
+  - `app/src/main/java/com/example/next_contest/MainActivity.kt`
+    - 실종 신고 확인 다이얼로그, 신고 저장, 112 전화 화면 열기 추가
+
+- 삭제:
+  - 없음
+
+- Firebase 설정/Rules 반영 필요:
+  - Firebase Authentication에서 Phone provider를 활성화해야 한다.
+  - `missingReports`, `missingReportsByUser`, `missingReportsByStatus`, `locations/{elderlyUid}/missingReported`, `users/{elderlyUid}/activeMissingReportId` 쓰기 권한을 보호자-어르신 연결 기준으로 허용해야 한다.
+
 ## 2026-05-14 지도 마커 아이콘 렌더링 / 위치 추적 마커 구분 기록
 
 - 완료:
