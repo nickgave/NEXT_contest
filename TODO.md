@@ -1,5 +1,30 @@
 # TODO
 
+## 2026-05-14 보호자 전역 안전구역 이탈 표시 구현 기록
+
+- 완료:
+  - [x] 보호자로 로그인한 동안 연결된 어르신의 `locations/{patientUid}/safeZoneAlert`를 전역 감시
+  - [x] 안전구역 이탈이 새로 발생하면 현재 보호자 화면 위에 공통 다이얼로그 표시
+  - [x] 다이얼로그에서 `위치 확인`을 누르면 실시간 위치 확인 화면으로 이동
+  - [x] 안전구역 복귀 시 열린 경고 다이얼로그를 닫고 복귀 Toast 표시
+  - [x] 로그인/어르신 모드/앱 종료 시 보호자 전역 감시자 정리
+
+- 생성:
+  - `app/src/main/java/com/example/next_contest/model/SafeZoneAlertState.kt`
+    - 전역 안전구역 경고 표시용 거리/반경 상태 모델 추가
+  - `app/src/main/java/com/example/next_contest/data/tracking/GuardianSafeZoneAlertRepository.kt`
+    - 보호자의 pairedUid를 찾고 연결된 어르신 위치 alert를 감시하는 Repository 추가
+
+- 수정:
+  - `app/src/main/java/com/example/next_contest/MainActivity.kt`
+    - 보호자 세션 전역 안전구역 감시 시작/중지 로직 추가
+    - 여러 보호자 화면 위에서 공통 안전구역 이탈 다이얼로그가 뜨도록 연결
+  - `TODO.md`
+    - 이번 변경 기록 추가
+
+- 삭제:
+  - 없음
+
 ## 2026-05-14 안전구역 이탈 알림 구현 기록
 
 - 완료:

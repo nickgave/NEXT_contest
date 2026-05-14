@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.example.next_contest.data.tracking.GuardianSafeZoneAlertRepository
 import com.example.next_contest.model.UserRole
 import com.example.next_contest.util.TTSHelper
 import com.example.next_contest.util.CompassHelper
@@ -29,6 +30,7 @@ import com.example.next_contest.controller.PatientLocationShareController
 import com.example.next_contest.controller.PlaceSettingController
 import com.example.next_contest.controller.SimpleScreenController
 import com.example.next_contest.model.SavedPlace
+import com.example.next_contest.model.SafeZoneAlertState
 import com.example.next_contest.service.MissingReportService
 import com.example.next_contest.service.PlaceService
 import com.example.next_contest.util.applySystemBarInsetsToContent
@@ -51,6 +53,9 @@ class MainActivity : AppCompatActivity() {
     private var currentScreen: AppScreen = AppScreen.LOGIN
     private var lastMainBackPressedAt = 0L
     private var homePlace: SavedPlace? = null
+    private var isActivityResumed = false
+    private var pendingSafeZoneAlert: SafeZoneAlertState? = null
+    private var safeZoneAlertDialog: AlertDialog? = null
 
     private val defaultHomePlace = SavedPlace(
         latitude = 37.5872,
@@ -62,6 +67,7 @@ class MainActivity : AppCompatActivity() {
     private val routeRepository = RouteRepository()
     private val placeService = PlaceService()
     private val missingReportService = MissingReportService()
+    private val guardianSafeZoneAlertRepository = GuardianSafeZoneAlertRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -278,6 +284,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showPatientMainScreen() {
+        stopGuardianSafeZoneAlertWatcher(resetState = true)
         currentScreen = AppScreen.PATIENT_MAIN
         resetMainBackExitTimer()
         mainMenuController.showPatientMainScreen()
@@ -291,6 +298,7 @@ class MainActivity : AppCompatActivity() {
         mainMenuController.showGuardianMainScreen()
         loadHomePlace()
         startPatientLocationSharing()
+        startGuardianSafeZoneAlertWatcher()
     }
 
     private fun showSettingsScreen() {
@@ -376,6 +384,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLoginScreen(signOutFirst: Boolean = false) {
+        stopGuardianSafeZoneAlertWatcher(resetState = true)
         currentScreen = AppScreen.LOGIN
         resetMainBackExitTimer()
         stopLocationUpdates()
@@ -577,6 +586,94 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun startGuardianSafeZoneAlertWatcher() {
+        if (userRole != UserRole.GUARDIAN) return
+
+        guardianSafeZoneAlertRepository.startWatching(
+            onAlert = { alert ->
+                runOnUiThread {
+                    handleGuardianSafeZoneAlert(alert)
+                }
+            },
+            onCleared = {
+                runOnUiThread {
+                    clearGuardianSafeZoneAlert()
+                }
+            },
+            onError = {
+                // Pairing may not exist yet, so this watcher should not interrupt the screen.
+            }
+        )
+    }
+
+    private fun stopGuardianSafeZoneAlertWatcher(resetState: Boolean = false) {
+        guardianSafeZoneAlertRepository.stopWatching(resetState = resetState)
+        pendingSafeZoneAlert = null
+        safeZoneAlertDialog?.dismiss()
+        safeZoneAlertDialog = null
+    }
+
+    private fun handleGuardianSafeZoneAlert(alert: SafeZoneAlertState) {
+        pendingSafeZoneAlert = alert
+
+        if (!isActivityResumed || userRole != UserRole.GUARDIAN || isFinishing || isDestroyed) {
+            return
+        }
+
+        showGuardianSafeZoneAlertDialog(alert)
+    }
+
+    private fun clearGuardianSafeZoneAlert() {
+        pendingSafeZoneAlert = null
+        safeZoneAlertDialog?.dismiss()
+        safeZoneAlertDialog = null
+
+        if (isActivityResumed && userRole == UserRole.GUARDIAN) {
+            Toast.makeText(this, "어르신이 안전구역 안으로 돌아왔습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showPendingSafeZoneAlertIfNeeded() {
+        val alert = pendingSafeZoneAlert ?: return
+
+        if (userRole == UserRole.GUARDIAN && isActivityResumed) {
+            showGuardianSafeZoneAlertDialog(alert)
+        }
+    }
+
+    private fun showGuardianSafeZoneAlertDialog(alert: SafeZoneAlertState) {
+        if (safeZoneAlertDialog?.isShowing == true) return
+
+        safeZoneAlertDialog = AlertDialog.Builder(this)
+            .setTitle("안전구역 이탈 알림")
+            .setMessage(buildSafeZoneAlertMessage(alert))
+            .setNegativeButton("닫기") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("위치 확인") { dialog, _ ->
+                dialog.dismiss()
+                showLocationScreen()
+            }
+            .setOnDismissListener {
+                safeZoneAlertDialog = null
+                if (pendingSafeZoneAlert == alert) {
+                    pendingSafeZoneAlert = null
+                }
+            }
+            .show()
+    }
+
+    private fun buildSafeZoneAlertMessage(alert: SafeZoneAlertState): String {
+        val distance = alert.distanceMeters
+        val radius = alert.radiusMeters
+
+        return if (distance != null && radius != null) {
+            "어르신이 안전구역 밖에 있습니다.\n현재 거리 약 ${distance}m / 안전 반경 ${radius}m"
+        } else {
+            "어르신이 설정된 안전구역 밖에 있습니다.\n위치 확인 화면에서 현재 위치를 확인하세요."
+        }
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -612,13 +709,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        isActivityResumed = true
         if (::compassHelper.isInitialized) {
             compassHelper.start()
         }
+        startGuardianSafeZoneAlertWatcher()
+        showPendingSafeZoneAlertIfNeeded()
     }
 
     override fun onPause() {
         super.onPause()
+        isActivityResumed = false
         if (::compassHelper.isInitialized) {
             compassHelper.stop()
         }
@@ -629,6 +730,7 @@ class MainActivity : AppCompatActivity() {
         if (::pairedLocationMapController.isInitialized) {
             pairedLocationMapController.stop()
         }
+        stopGuardianSafeZoneAlertWatcher(resetState = true)
         stopPatientLocationSharing()
         ttsHelper.shutdown()
         super.onDestroy()
