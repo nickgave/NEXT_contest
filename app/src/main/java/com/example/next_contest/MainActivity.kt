@@ -419,11 +419,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun submitMissingReport() {
         missingReportService.submitMissingReport(
-            onSuccess = { reportId ->
+            onSuccess = {
                 runOnUiThread {
                     Toast.makeText(
                         this,
-                        "실종 신고가 저장되었습니다. 신고번호: $reportId",
+                        "실종 신고 정보가 저장되었습니다. 112로 연결합니다.",
                         Toast.LENGTH_LONG
                     ).show()
                     openDialer(POLICE_PHONE_NUMBER)
