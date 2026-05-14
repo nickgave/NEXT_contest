@@ -1,5 +1,51 @@
 # TODO
 
+## 2026-05-14 안전구역 이탈 알림 구현 기록
+
+- 완료:
+  - [x] 환자 위치 업로드 시 `users/{patientUid}/safeZone`을 읽어 현재 위치와 안전 반경 비교
+  - [x] 안전구역 밖이면 `locations/{patientUid}/safeZoneAlert=true` 및 거리/반경/중심 좌표 기록
+  - [x] 안전구역 안으로 돌아오면 `safeZoneAlert=false`로 자동 해제
+  - [x] 보호자 실시간 추적 화면에서 안전구역 이탈 배너 표시
+  - [x] 보호자/상대 위치 지도 화면 상태 문구와 Toast에 안전구역 이탈 표시
+  - [x] 보호자가 설정한 안전구역이 보호자 계정이 아니라 연결된 어르신 계정에 저장되도록 수정
+
+- 생성:
+  - 없음
+
+- 수정:
+  - `app/src/main/java/com/example/next_contest/data/tracking/LocationSharingRepository.kt`
+    - 위치 갱신 시 안전구역을 함께 조회하고 거리 계산 후 alert 필드를 갱신
+    - 안전구역 없음/복귀 시 alert 필드를 정리
+  - `app/src/main/java/com/example/next_contest/model/PatientLocation.kt`
+    - `safeZoneAlert`, `safeZoneAlertDistanceMeters`, `safeZoneRadiusMeters` 필드 추가
+  - `app/src/main/java/com/example/next_contest/data/tracking/TrackingRepository.kt`
+    - 위치 스냅샷에서 안전구역 alert 필드 파싱
+    - 알림 해제 버튼이 SOS와 안전구역 alert를 함께 해제하도록 변경
+  - `app/src/main/java/com/example/next_contest/data/tracking/PairedLocationRepository.kt`
+    - 상대 위치 스냅샷에서 안전구역 alert 필드 파싱
+  - `app/src/main/java/com/example/next_contest/controller/TracingUiController.kt`
+    - 안전구역 이탈 시 보호자 추적 화면 배너 문구 표시
+  - `app/src/main/java/com/example/next_contest/controller/PairedLocationMapController.kt`
+    - 안전구역 이탈 상태 문구와 최초 Toast 표시
+  - `app/src/main/java/com/example/next_contest/data/place/UserPlaceRepository.kt`
+    - 특정 사용자 UID의 안전구역을 읽고 저장하는 메서드 추가
+  - `app/src/main/java/com/example/next_contest/service/PlaceService.kt`
+    - 연결된 어르신 안전구역 읽기/저장 서비스 추가
+  - `app/src/main/java/com/example/next_contest/controller/PlaceSettingController.kt`
+    - 안전구역 설정 대상이 현재 사용자/연결된 어르신 중 선택되도록 확장
+  - `app/src/main/java/com/example/next_contest/MainActivity.kt`
+    - 보호자 안전구역 설정 화면이 연결된 어르신 집 위치를 기본값으로 사용하고 어르신 계정에 저장하도록 연결
+  - `TODO.md`
+    - 이번 변경 기록 추가
+
+- 삭제:
+  - 없음
+
+- 남은 주의사항:
+  - 현재 구현은 Firebase Realtime Database 값 변경을 보호자 앱이 수신해 화면/Toast로 알리는 방식이다.
+  - 앱이 완전히 종료된 상태에서도 푸시 알림을 보내려면 FCM 또는 서버/Cloud Functions 구성이 추가로 필요하다.
+
 ## 2026-05-14 휴대폰 인증 제거 기록
 
 - 완료:

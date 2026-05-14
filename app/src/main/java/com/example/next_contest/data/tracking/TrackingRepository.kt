@@ -6,6 +6,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 
 class TrackingRepository(
@@ -66,10 +67,16 @@ class TrackingRepository(
             return
         }
 
+        val updates = hashMapOf<String, Any?>(
+            "sos" to false,
+            "safeZoneAlert" to false,
+            "safeZoneAlertAt" to null,
+            "safeZoneAlertClearedAt" to ServerValue.TIMESTAMP
+        )
+
         db.child("locations")
             .child(uid)
-            .child("sos")
-            .setValue(false)
+            .updateChildren(updates)
             .addOnSuccessListener {
                 onSuccess()
             }
@@ -140,6 +147,9 @@ class TrackingRepository(
         val ts = snapshot.child("timestamp").getValue(Long::class.java)
         val isOnline = snapshot.child("isOnline").getValue(Boolean::class.java) ?: false
         val sos = snapshot.child("sos").getValue(Boolean::class.java) ?: false
+        val safeZoneAlert = snapshot.child("safeZoneAlert").getValue(Boolean::class.java) ?: false
+        val safeZoneAlertDistanceMeters = snapshot.child("safeZoneAlertDistanceMeters").asInt()
+        val safeZoneRadiusMeters = snapshot.child("safeZoneRadiusMeters").asInt()
 
         if (lat == null || lng == null) {
             return null
@@ -150,7 +160,16 @@ class TrackingRepository(
             longitude = lng,
             timestamp = ts,
             isOnline = isOnline,
-            sos = sos
+            sos = sos,
+            safeZoneAlert = safeZoneAlert,
+            safeZoneAlertDistanceMeters = safeZoneAlertDistanceMeters,
+            safeZoneRadiusMeters = safeZoneRadiusMeters
         )
+    }
+
+    private fun DataSnapshot.asInt(): Int? {
+        return getValue(Int::class.java)
+            ?: getValue(Long::class.java)?.toInt()
+            ?: getValue(Double::class.java)?.toInt()
     }
 }

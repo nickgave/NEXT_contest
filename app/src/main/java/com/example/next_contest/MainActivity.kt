@@ -304,15 +304,41 @@ class MainActivity : AppCompatActivity() {
         if (::pairedLocationMapController.isInitialized) {
             pairedLocationMapController.stop()
         }
-        placeSettingController.showSafeZoneSetting(
-            defaultPlace = homePlace ?: defaultHomePlace,
-            onBack = {
-                showGuardianMainScreen()
-            },
-            onSaved = {
-                // Safe zone is persisted by PlaceSettingController.
-            }
-        )
+
+        val target = if (userRole == UserRole.GUARDIAN) {
+            HomeSettingTarget.PAIRED_ELDERLY
+        } else {
+            HomeSettingTarget.CURRENT_USER
+        }
+        val openSafeZoneSetting: (SavedPlace) -> Unit = { defaultPlace ->
+            placeSettingController.showSafeZoneSetting(
+                defaultPlace = defaultPlace,
+                target = target,
+                onBack = {
+                    showGuardianMainScreen()
+                },
+                onSaved = {
+                    // Safe zone is persisted by PlaceSettingController.
+                }
+            )
+        }
+
+        if (target == HomeSettingTarget.PAIRED_ELDERLY) {
+            placeService.loadPairedElderlyHome(
+                onSuccess = { pairedHome ->
+                    runOnUiThread {
+                        openSafeZoneSetting(pairedHome ?: defaultHomePlace)
+                    }
+                },
+                onFailure = {
+                    runOnUiThread {
+                        openSafeZoneSetting(defaultHomePlace)
+                    }
+                }
+            )
+        } else {
+            openSafeZoneSetting(homePlace ?: defaultHomePlace)
+        }
     }
 
     private fun showMapScreen() {

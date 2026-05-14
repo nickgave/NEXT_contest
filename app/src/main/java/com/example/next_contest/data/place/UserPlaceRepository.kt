@@ -51,12 +51,29 @@ class UserPlaceRepository(
         loadPlace("safeZone", onSuccess, onFailure)
     }
 
+    fun loadSafeZoneForUser(
+        uid: String,
+        onSuccess: (SavedPlace?) -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        loadPlaceForUser(uid, "safeZone", onSuccess, onFailure)
+    }
+
     fun saveSafeZone(
         place: SavedPlace,
         onSuccess: () -> Unit,
         onFailure: (message: String) -> Unit
     ) {
         savePlace("safeZone", place, onSuccess, onFailure)
+    }
+
+    fun saveSafeZoneForUser(
+        uid: String,
+        place: SavedPlace,
+        onSuccess: () -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        savePlaceForUser(uid, "safeZone", place, onSuccess, onFailure)
     }
 
     private fun loadPlace(

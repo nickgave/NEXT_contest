@@ -52,13 +52,14 @@ class PlaceSettingController(
 
     fun showSafeZoneSetting(
         defaultPlace: SavedPlace,
+        target: HomeSettingTarget = HomeSettingTarget.CURRENT_USER,
         onBack: () -> Unit,
         onSaved: (SavedPlace) -> Unit
     ) {
         show(
             mode = PlaceSettingMode.SAFE_ZONE,
             defaultPlace = defaultPlace,
-            homeTarget = HomeSettingTarget.CURRENT_USER,
+            homeTarget = target,
             onBack = onBack,
             onSaved = onSaved
         )
@@ -174,7 +175,11 @@ class PlaceSettingController(
                 placeService.loadHome(onSuccess, onFailure)
             }
         } else {
-            placeService.loadSafeZone(onSuccess, onFailure)
+            if (currentHomeTarget == HomeSettingTarget.PAIRED_ELDERLY) {
+                placeService.loadPairedElderlySafeZone(onSuccess, onFailure)
+            } else {
+                placeService.loadSafeZone(onSuccess, onFailure)
+            }
         }
     }
 
@@ -285,7 +290,11 @@ class PlaceSettingController(
                 placeService.saveHome(finalPlace, onSuccess, onFailure)
             }
         } else {
-            placeService.saveSafeZone(finalPlace, onSuccess, onFailure)
+            if (currentHomeTarget == HomeSettingTarget.PAIRED_ELDERLY) {
+                placeService.savePairedElderlySafeZone(finalPlace, onSuccess, onFailure)
+            } else {
+                placeService.saveSafeZone(finalPlace, onSuccess, onFailure)
+            }
         }
     }
 
@@ -294,6 +303,8 @@ class PlaceSettingController(
         homeTarget: HomeSettingTarget
     ): String {
         return when {
+            mode == PlaceSettingMode.SAFE_ZONE &&
+                homeTarget == HomeSettingTarget.PAIRED_ELDERLY -> "어르신 안전구역 설정"
             mode == PlaceSettingMode.SAFE_ZONE -> "안전구역 설정"
             homeTarget == HomeSettingTarget.PAIRED_ELDERLY -> "어르신 집 설정"
             else -> "집 설정"
@@ -305,6 +316,8 @@ class PlaceSettingController(
         homeTarget: HomeSettingTarget
     ): String {
         return when {
+            mode == PlaceSettingMode.SAFE_ZONE &&
+                homeTarget == HomeSettingTarget.PAIRED_ELDERLY -> "어르신 안전구역 저장"
             mode == PlaceSettingMode.SAFE_ZONE -> "안전구역 저장"
             homeTarget == HomeSettingTarget.PAIRED_ELDERLY -> "어르신 집 위치 저장"
             else -> "집 위치 저장"

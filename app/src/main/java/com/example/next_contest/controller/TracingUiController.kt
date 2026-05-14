@@ -106,11 +106,25 @@ class TracingUiController(
         tvCoordinates.text =
             "위도: ${"%.5f".format(location.latitude)}  경도: ${"%.5f".format(location.longitude)}"
 
-        if (location.sos) {
+        if (location.safeZoneAlert) {
+            layoutSosBanner.visibility = View.VISIBLE
+            tvSosMessage.text = buildSafeZoneAlertMessage(location)
+        } else if (location.sos) {
             layoutSosBanner.visibility = View.VISIBLE
             tvSosMessage.text = "SOS 요청이 발생했습니다!\n어르신이 도움을 요청하고 있습니다."
         } else {
             layoutSosBanner.visibility = View.GONE
+        }
+    }
+
+    private fun buildSafeZoneAlertMessage(location: PatientLocation): String {
+        val distance = location.safeZoneAlertDistanceMeters
+        val radius = location.safeZoneRadiusMeters
+
+        return if (distance != null && radius != null) {
+            "안전구역 이탈 알림\n현재 거리 약 ${distance}m / 안전 반경 ${radius}m"
+        } else {
+            "안전구역 이탈 알림\n어르신이 설정된 안전구역 밖에 있습니다."
         }
     }
 

@@ -69,6 +69,31 @@ class PlaceService(
         placeRepository.saveSafeZone(place, onSuccess, onFailure)
     }
 
+    fun loadPairedElderlySafeZone(
+        onSuccess: (SavedPlace?) -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        loadPairedElderlyUid(
+            onSuccess = { elderlyUid ->
+                placeRepository.loadSafeZoneForUser(elderlyUid, onSuccess, onFailure)
+            },
+            onFailure = onFailure
+        )
+    }
+
+    fun savePairedElderlySafeZone(
+        place: SavedPlace,
+        onSuccess: () -> Unit,
+        onFailure: (message: String) -> Unit
+    ) {
+        loadPairedElderlyUid(
+            onSuccess = { elderlyUid ->
+                placeRepository.saveSafeZoneForUser(elderlyUid, place, onSuccess, onFailure)
+            },
+            onFailure = onFailure
+        )
+    }
+
     fun findPlaceByAddress(
         query: String,
         onSuccess: (SavedPlace) -> Unit,

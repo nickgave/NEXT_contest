@@ -36,6 +36,7 @@ class PairedLocationMapController(
     private lateinit var distanceText: TextView
     private var mapStarted = false
     private var watchingPairedLocation = false
+    private var lastSafeZoneAlert = false
 
     fun start() {
         if (!mapStarted) {
@@ -45,9 +46,9 @@ class PairedLocationMapController(
             mapController.start()
             mapStarted = true
         }
+
         statusText = activity.findViewById(R.id.tvMapStatus)
         distanceText = activity.findViewById(R.id.tvMapDistance)
-
         statusText.text = "위치 정보를 불러오는 중입니다."
         distanceText.text = ""
 
@@ -69,6 +70,7 @@ class PairedLocationMapController(
         locationCallback = null
         pairedLocationRepository.stopWatchingPairedLocation()
         watchingPairedLocation = false
+        lastSafeZoneAlert = false
 
         if (::mapController.isInitialized && mapStarted) {
             mapController.stop()
@@ -149,13 +151,32 @@ class PairedLocationMapController(
         pairedLng = location.longitude
 
         activity.runOnUiThread {
-            statusText.text =
-                if (location.isOnline) {
-                    "$pairedName 위치 공유 중"
-                } else {
-                    "$pairedName 마지막 위치"
-                }
+            if (location.safeZoneAlert && !lastSafeZoneAlert) {
+                Toast.makeText(activity, "안전구역 이탈 알림이 발생했습니다.", Toast.LENGTH_LONG).show()
+            }
+
+            lastSafeZoneAlert = location.safeZoneAlert
+            statusText.text = makeStatusText(location)
             updateMap()
+        }
+    }
+
+    private fun makeStatusText(location: PatientLocation): String {
+        if (location.safeZoneAlert) {
+            val distance = location.safeZoneAlertDistanceMeters
+            val radius = location.safeZoneRadiusMeters
+
+            return if (distance != null && radius != null) {
+                "안전구역 이탈: 현재 약 ${distance}m / 반경 ${radius}m"
+            } else {
+                "안전구역 이탈 알림"
+            }
+        }
+
+        return if (location.isOnline) {
+            "$pairedName 위치 공유 중"
+        } else {
+            "$pairedName 마지막 위치"
         }
     }
 
@@ -185,7 +206,7 @@ class PairedLocationMapController(
             )
             distanceText.text = "상대와의 거리: 약 ${distance.toInt()}m"
         } else {
-            distanceText.text = "두 위치가 모두 수신되면 거리를 표시합니다."
+            distanceText.text = "내 위치와 상대 위치가 모두 수신되면 거리를 표시합니다."
         }
     }
 

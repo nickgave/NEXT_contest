@@ -111,6 +111,9 @@ class PairedLocationRepository(
         val ts = snapshot.child("timestamp").getValue(Long::class.java)
         val isOnline = snapshot.child("isOnline").getValue(Boolean::class.java) ?: false
         val sos = snapshot.child("sos").getValue(Boolean::class.java) ?: false
+        val safeZoneAlert = snapshot.child("safeZoneAlert").getValue(Boolean::class.java) ?: false
+        val safeZoneAlertDistanceMeters = snapshot.child("safeZoneAlertDistanceMeters").asInt()
+        val safeZoneRadiusMeters = snapshot.child("safeZoneRadiusMeters").asInt()
 
         if (lat == null || lng == null) {
             return null
@@ -121,7 +124,16 @@ class PairedLocationRepository(
             longitude = lng,
             timestamp = ts,
             isOnline = isOnline,
-            sos = sos
+            sos = sos,
+            safeZoneAlert = safeZoneAlert,
+            safeZoneAlertDistanceMeters = safeZoneAlertDistanceMeters,
+            safeZoneRadiusMeters = safeZoneRadiusMeters
         )
+    }
+
+    private fun DataSnapshot.asInt(): Int? {
+        return getValue(Int::class.java)
+            ?: getValue(Long::class.java)?.toInt()
+            ?: getValue(Double::class.java)?.toInt()
     }
 }
