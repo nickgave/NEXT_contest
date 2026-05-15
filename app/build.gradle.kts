@@ -12,6 +12,22 @@ val localProperties = Properties().apply {
     }
 }
 
+val keystoreProperties = Properties().apply {
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    if (keystorePropertiesFile.exists()) {
+        keystorePropertiesFile.inputStream().use { load(it) }
+    }
+}
+
+val requiredKeystoreProperties = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+val hasReleaseKeystore = requiredKeystoreProperties.all {
+    !keystoreProperties.getProperty(it).isNullOrBlank()
+} && rootProject.file(keystoreProperties.getProperty("storeFile", "")).exists()
+
+fun keystoreProperty(name: String): String =
+    keystoreProperties.getProperty(name)
+        ?: error("Missing `$name` in keystore.properties")
+
 android {
     namespace = "com.example.next_contest"
 
@@ -53,8 +69,22 @@ android {
         )
     }
 
+    signingConfigs {
+        if (hasReleaseKeystore) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProperty("storeFile"))
+                storePassword = keystoreProperty("storePassword")
+                keyAlias = keystoreProperty("keyAlias")
+                keyPassword = keystoreProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (hasReleaseKeystore) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -66,6 +96,16 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+tasks.configureEach {
+    if (name.contains("Release")) {
+        doFirst {
+            check(hasReleaseKeystore) {
+                "Release signing requires keystore.properties and the referenced keystore file."
+            }
+        }
     }
 }
 
