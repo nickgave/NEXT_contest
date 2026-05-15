@@ -1,5 +1,55 @@
 # TODO
 
+## 2026-05-15 wear/build Git 추적 제거 기록
+
+- 완료:
+  - [x] `wear/build`가 Git에 tracked 상태였는지 확인
+  - [x] `git rm -r --cached wear/build`로 로컬 파일은 유지하고 Git 추적만 제거
+  - [x] 제거 후 `git ls-files wear/build` 결과 0개 확인
+  - [x] `wear/.gitignore`로 워치 모듈 빌드 산출물 재추적 방지
+
+- 생성:
+  - `wear/.gitignore`
+    - `/build` 추가
+
+- 수정:
+  - `TODO.md`
+    - 이번 변경 기록 추가
+
+- 삭제:
+  - Git 추적 대상에서 `wear/build` 하위 445개 빌드 산출물 제거
+
+- 주의:
+  - 이미 원격 저장소에 push된 경우, 이 커밋만으로는 과거 Git 히스토리의 키 노출이 사라지지 않는다.
+  - TMAP/Kakao REST 키는 노출된 것으로 보고 재발급 또는 사용 제한을 걸어야 한다.
+
+## 2026-05-14 릴리즈 APK 서명 설정 기록
+
+- 완료:
+  - [x] 앱 모듈 release 빌드가 `keystore.properties`의 release key로 서명되도록 설정
+  - [x] 워치 모듈 release 빌드도 같은 release key로 서명되도록 설정
+  - [x] `keystore.properties` 필수 값이 없으면 Gradle 설정 단계에서 실패하도록 처리
+  - [x] `keystore.properties`가 없는 환경에서도 debug 빌드는 막히지 않도록 release 태스크에만 필수 검사 적용
+  - [x] `.\gradlew.bat :app:assembleRelease :wear:assembleRelease` 성공
+
+- 생성:
+  - 없음
+
+- 수정:
+  - `app/build.gradle.kts`
+    - `keystore.properties` 로드 및 `signingConfigs.release` 추가
+    - `buildTypes.release.signingConfig` 연결
+  - `wear/build.gradle.kts`
+    - `keystore.properties` 로드 및 `signingConfigs.release` 추가
+    - `buildTypes.release.signingConfig` 연결
+  - `wear/.gitignore`
+    - 워치 모듈 빌드 산출물 `wear/build` 제외 설정 추가
+  - `TODO.md`
+    - 이번 변경 기록 추가
+
+- 삭제:
+  - 없음
+
 ## 2026-05-14 실종 신고 Toast 문구 축소 기록
 
 - 완료:
